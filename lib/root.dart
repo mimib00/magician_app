@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:magician_app/utils/constants.dart';
+import 'package:magician_app/utils/magician_icons_icons.dart';
 import 'package:magician_app/views/camera_screen.dart';
 import 'package:magician_app/views/gallery_screen.dart';
 import 'package:magician_app/views/settings_screen.dart';
@@ -20,6 +22,7 @@ class _RootPageState extends State<RootPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: backgroundColor,
       body: screens[selectedScreen],
       bottomNavigationBar: BottomNavigationBar(
         onTap: (index) {
@@ -29,16 +32,17 @@ class _RootPageState extends State<RootPage> {
         },
         currentIndex: selectedScreen,
         type: BottomNavigationBarType.fixed,
-        iconSize: 35,
+        iconSize: 30,
         showSelectedLabels: false,
         showUnselectedLabels: false,
+        elevation: 0,
+        backgroundColor: backgroundColor,
+        selectedItemColor: primaryColor,
+        unselectedItemColor: Colors.white,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.image), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: '',
-          ),
+          BottomNavigationBarItem(icon: Icon(MagicianIcons.gallery), label: ''),
+          BottomNavigationBarItem(icon: Icon(MagicianIcons.home), label: ''),
+          BottomNavigationBarItem(icon: Icon(MagicianIcons.settings), label: ''),
         ],
       ),
     );
