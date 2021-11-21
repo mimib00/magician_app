@@ -20,6 +20,23 @@ class _CameraScreenState extends State<CameraScreen> {
   int selectedCamera = 0;
   bool isFlashOn = true;
 
+  double scale = 0;
+
+  setScale(context) {
+    var camera = _controller.value;
+    // fetch screen size
+    final size = MediaQuery.of(context).size;
+
+    // calculate scale depending on screen and camera ratios
+    // this is actually size.aspectRatio / (1 / camera.aspectRatio)
+    // because camera preview size is received as landscape
+    // but we're calculating for portrait orientation
+    scale = size.aspectRatio * camera.aspectRatio;
+
+    // to prevent scaling down, invert the value
+    if (scale < 1) scale = 1 / scale;
+  }
+
   initializeCamera(int cameraIndex) async {
     _controller = CameraController(
       // Get a specific camera from the list of available cameras.
@@ -53,17 +70,19 @@ class _CameraScreenState extends State<CameraScreen> {
 
   @override
   Widget build(BuildContext context) {
+    setScale(context);
     return Center(
       child: !_controller.value.isInitialized
           ? const CircularProgressIndicator()
-          : SizedBox(
-              height: double.infinity,
+          : Transform.scale(
+              scale: scale,
               child: CameraPreview(
                 _controller,
                 child: Align(
                   alignment: Alignment.bottomCenter,
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 20),
+                    margin: const EdgeInsets.only(bottom: 10),
                     color: const Color(0xff181B30).withOpacity(.5),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -102,8 +121,8 @@ class _CameraScreenState extends State<CameraScreen> {
                             );
                           },
                           child: Container(
-                            height: 80,
-                            width: 80,
+                            height: 60,
+                            width: 60,
                             decoration: const BoxDecoration(
                               shape: BoxShape.circle,
                               color: mainGrayColor,
