@@ -19,10 +19,25 @@ class _RootPageState extends State<RootPage> {
     CameraScreen(),
     SettingScreen()
   ];
+  List<String> titles = const [
+    'Gallery',
+    '',
+    'Settings'
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
+      appBar: selectedScreen != 1
+          ? AppBar(
+              title: Text(
+                titles[selectedScreen],
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+              ),
+              elevation: 0,
+              backgroundColor: backgroundColor,
+            )
+          : null,
       body: screens[selectedScreen],
       bottomNavigationBar: BottomNavigationBar(
         onTap: (index) {

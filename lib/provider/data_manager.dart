@@ -16,7 +16,7 @@ class DataManager extends ChangeNotifier {
   List<File?> files = [];
 
   int _currentPage = 0;
-  int _pageSize = 20;
+  int _pageSize = 100;
 
   List<CameraDescription>? get cameras => _cameras;
 
@@ -26,7 +26,6 @@ class DataManager extends ChangeNotifier {
   void init() async {
     var result = await PhotoManager.requestPermissionExtend();
     hasPermission = result.isAuth;
-    // if (hasPermission)
   }
 
   setAvailableCameras(List<CameraDescription> cameras) => _cameras = cameras;
@@ -37,15 +36,6 @@ class DataManager extends ChangeNotifier {
 
     final recentAssets = await recentAlbum.getAssetListPaged(_currentPage, _pageSize);
     images = recentAssets;
-    notifyListeners();
-  }
-
-  void getThumbs() async {
-    thumbs.clear();
-    for (var image in images) {
-      var temp = await image.thumbData;
-      thumbs.add(temp);
-    }
     notifyListeners();
   }
 }
