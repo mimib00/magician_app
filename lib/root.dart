@@ -24,10 +24,11 @@ class _RootPageState extends State<RootPage> {
     '',
     'Settings'
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundColor,
+      // backgroundColor: backgroundColor,
       appBar: selectedScreen != 1
           ? AppBar(
               title: Text(

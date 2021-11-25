@@ -21,7 +21,13 @@ class AssetThumbnail extends StatelessWidget {
         // If we have no data, display a spinner
         if (bytes == null) return const CircularProgressIndicator();
         // If there's data, display it as an image
-        return Image.memory(bytes, fit: BoxFit.cover);
+        return Container(
+          margin: const EdgeInsets.all(5),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.memory(bytes, fit: BoxFit.cover),
+          ),
+        );
       },
     );
   }
