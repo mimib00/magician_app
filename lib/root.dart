@@ -17,7 +17,7 @@ class _RootPageState extends State<RootPage> {
   List<Widget> screens = const [
     GalleryScreen(),
     CameraScreen(),
-    SettingScreen()
+    SettingScreen(),
   ];
   List<String> titles = const [
     'Gallery',

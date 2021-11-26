@@ -42,7 +42,7 @@ class _CameraScreenState extends State<CameraScreen> {
     var scale = context.watch<DataManager>().scale;
     return Center(
       child: !_controller.value.isInitialized
-          ? const CircularProgressIndicator()
+          ? const CircularProgressIndicator(color: primaryColor)
           : Transform.scale(
               scale: scale,
               child: CameraPreview(

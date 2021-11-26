@@ -10,6 +10,7 @@ import 'package:photo_manager/photo_manager.dart';
 /// This class manage the state of difrent elements of the app
 class DataManager extends ChangeNotifier {
   bool hasPermission = false;
+
   List<CameraDescription> _cameras = []; // store the available cameras for later use
   late CameraController _controller;
 
@@ -24,6 +25,7 @@ class DataManager extends ChangeNotifier {
 
   List<CameraDescription> get cameras => _cameras;
   CameraController get controller => _controller;
+
   double get scale => _scale;
 
   set setCurrentPage(int page) => _currentPage = page;
