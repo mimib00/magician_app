@@ -62,7 +62,7 @@ class DataManager extends ChangeNotifier {
     if (_scale < 1) _scale = 1 / _scale;
   }
 
-  void init() async {
+  void _init() async {
     var result = await PhotoManager.requestPermissionExtend();
     hasPermission = result.isAuth;
   }
@@ -70,6 +70,7 @@ class DataManager extends ChangeNotifier {
   setAvailableCameras(List<CameraDescription> cameras) => _cameras = cameras;
 
   void getImages() async {
+    _init();
     final albums = await PhotoManager.getAssetPathList(type: RequestType.image, onlyAll: true);
     final recentAlbum = albums.first;
 

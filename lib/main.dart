@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.read<DataManager>().setAvailableCameras(cameras);
-    context.read<DataManager>().init();
+
     return MaterialApp(
       title: 'Magician Demo',
       theme: ThemeData(
