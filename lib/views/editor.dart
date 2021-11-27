@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -5,6 +7,7 @@ import 'package:add_to_gallery/add_to_gallery.dart';
 import 'package:flutter/material.dart';
 import 'package:magician_app/utils/constants.dart';
 import 'package:magician_app/utils/magician_icons_icons.dart';
+import 'package:magician_app/widgets/card_selctor.dart';
 import 'package:magician_app/widgets/custom_button.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:screenshot/screenshot.dart';
@@ -66,6 +69,7 @@ class _EditorScreenState extends State<EditorScreen> {
             // If there's data, display it as an image
             return Column(
               mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Screenshot(
                   controller: screenshotController,
@@ -83,7 +87,8 @@ class _EditorScreenState extends State<EditorScreen> {
                     ],
                   ),
                 ),
-                const Spacer(),
+                // const Spacer(),
+                const CardSelector(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
