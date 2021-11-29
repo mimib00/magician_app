@@ -28,7 +28,7 @@ class DeckCustomizer extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 25),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: const [
+                children: [
                   MagicCard(
                     cardName: "H-A",
                   ),
@@ -97,15 +97,15 @@ class DeckCustomizer extends StatelessWidget {
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text(
+              children: [
+                const Text(
                   "Background",
                   style: TextStyle(color: Color(0xff8390C1), fontSize: 18, fontWeight: FontWeight.normal),
                 ),
                 ColorDropDown(
                   id: 'card_background',
-                  initialColor: Colors.white,
-                  items: [
+                  initialColor: context.read<DataManager>().backgroundColor!.value,
+                  items: const [
                     Colors.white,
                     Colors.red,
                     Colors.black,
@@ -137,10 +137,10 @@ class DeckCustomizer extends StatelessWidget {
                     ],
                   ),
                 ),
-                const ColorDropDown(
+                ColorDropDown(
                   id: "coeur_carreau",
-                  initialColor: Colors.red,
-                  items: [
+                  initialColor: context.read<DataManager>().coeurCarreau!.value,
+                  items: const [
                     Colors.white,
                     Colors.red,
                     Colors.black,
@@ -172,10 +172,10 @@ class DeckCustomizer extends StatelessWidget {
                     ],
                   ),
                 ),
-                const ColorDropDown(
+                ColorDropDown(
                   id: "trefle_pique",
-                  initialColor: Colors.black,
-                  items: [
+                  initialColor: context.read<DataManager>().treflePique!.value,
+                  items: const [
                     Colors.white,
                     Colors.red,
                     Colors.black,

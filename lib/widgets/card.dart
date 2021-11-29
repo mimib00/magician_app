@@ -1,72 +1,60 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
+import 'package:magician_app/provider/data_manager.dart';
 import 'package:magician_app/utils/cards_icons_icons.dart';
+import 'package:provider/provider.dart';
 
-class MagicCard extends StatefulWidget {
+class MagicCard extends StatelessWidget {
   final String cardName;
-  const MagicCard({Key? key, required this.cardName}) : super(key: key);
+  MagicCard({Key? key, required this.cardName}) : super(key: key);
 
-  @override
-  State<MagicCard> createState() => _MagicCardState();
-}
-
-class _MagicCardState extends State<MagicCard> {
   Icon? _cardTypeIcon;
   String name = "";
   Color? cardColor;
 
-  initCardInfo() {
-    final type = widget.cardName.split('-');
+  @override
+  Widget build(BuildContext context) {
+    final type = cardName.split('-');
     name = type[1];
 
     switch (type[0]) {
       case "D":
-        _cardTypeIcon = const Icon(
+        _cardTypeIcon = Icon(
           CardsIcons.carreau,
-          color: Colors.red,
+          color: context.watch<DataManager>().coeurCarreau,
         );
-        cardColor = Colors.red;
+        cardColor = context.watch<DataManager>().coeurCarreau;
         break;
       case "H":
-        _cardTypeIcon = const Icon(
+        _cardTypeIcon = Icon(
           CardsIcons.coeur,
-          color: Colors.red,
+          color: context.watch<DataManager>().coeurCarreau,
         );
-        cardColor = Colors.red;
+        cardColor = context.watch<DataManager>().coeurCarreau;
         break;
       case "C":
-        _cardTypeIcon = const Icon(
+        _cardTypeIcon = Icon(
           CardsIcons.trefle,
-          color: Colors.black,
+          color: context.watch<DataManager>().treflePique,
         );
-        cardColor = Colors.black;
+        cardColor = context.watch<DataManager>().treflePique;
         break;
       case "S":
-        _cardTypeIcon = const Icon(
+        _cardTypeIcon = Icon(
           CardsIcons.pique,
-          color: Colors.black,
+          color: context.watch<DataManager>().treflePique,
         );
-        cardColor = Colors.black;
+        cardColor = context.watch<DataManager>().treflePique;
         break;
       default:
     }
-  }
-
-  @override
-  void initState() {
-    initCardInfo();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Container(
       height: 100,
       width: 70,
       padding: const EdgeInsets.all(5),
       margin: const EdgeInsets.all(5),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+      decoration: BoxDecoration(color: context.watch<DataManager>().backgroundColor, borderRadius: BorderRadius.circular(10)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         textBaseline: TextBaseline.ideographic,

@@ -88,13 +88,7 @@ class DataManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setCardProps(String key, Color color) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setInt(key, color.value);
-    getCardProps();
-    notifyListeners();
-  }
-
+  /// Initilize card props if they are null.
   void initCardProps() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List keys = [
@@ -109,11 +103,19 @@ class DataManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Set the value to the it's key.
+  void setCardProps(String key, int color) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt(key, color);
+    getCardProps();
+    notifyListeners();
+  }
+
+  /// Fetches card props from phone.
   void getCardProps() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var keys = prefs.getKeys().toList();
     if (keys.length != 3) {
-      print(keys.length);
       initCardProps();
     }
 
