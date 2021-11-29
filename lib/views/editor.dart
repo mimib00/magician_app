@@ -69,26 +69,44 @@ class _EditorScreenState extends State<EditorScreen> {
             // If there's data, display it as an image
             return Column(
               mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Screenshot(
-                  controller: screenshotController,
+                Expanded(
                   child: Stack(
                     children: [
                       Container(
                         height: height * .7,
                         width: width,
-                        margin: const EdgeInsets.all(5),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Image.file(file, fit: BoxFit.fitWidth),
+                        margin: const EdgeInsets.all(8),
+                        child: Screenshot(
+                          controller: screenshotController,
+                          child: Stack(
+                            children: [
+                              SizedBox(
+                                width: width,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Image.file(file, fit: BoxFit.fitWidth),
+                                ),
+                              ),
+                              Positioned(
+                                top: 50,
+                                left: 100,
+                                child: Container(
+                                  height: 50,
+                                  width: 50,
+                                  color: Colors.amber,
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
+                      // const Spacer(),
+                      const Align(alignment: Alignment.bottomCenter, child: CardSelector()),
                     ],
                   ),
                 ),
-                // const Spacer(),
-                const CardSelector(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -103,7 +121,7 @@ class _EditorScreenState extends State<EditorScreen> {
                     ),
                     CustomIconButton(
                       onTap: () {
-                        print("Save");
+                        saveImageToGallery();
                       },
                       backgroundColor: primaryColor,
                       icon: const Icon(
@@ -113,7 +131,7 @@ class _EditorScreenState extends State<EditorScreen> {
                     ),
                     CustomIconButton(
                       onTap: () {
-                        print("Close");
+                        Navigator.pop(context);
                       },
                       backgroundColor: Colors.red[400]!,
                       icon: const Icon(

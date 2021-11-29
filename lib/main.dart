@@ -2,6 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:magician_app/provider/data_manager.dart';
 import 'package:magician_app/root.dart';
+import 'package:magician_app/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
       title: 'Magician Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: backgroundColor,
       ),
       home: const RootPage(),
     );

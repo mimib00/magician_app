@@ -83,6 +83,9 @@ flutter:
     - family: MagicianIcons
       fonts:
         - asset: assets/fonts/MagicianIcons.ttf
+    - family: CardsIcons
+      fonts:
+        - asset: assets/fonts/CardsIcons.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

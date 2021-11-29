@@ -1,11 +1,11 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
-import 'package:magician_app/models/card_types.dart';
+import 'package:magician_app/utils/cards_icons_icons.dart';
 
 class MagicCard extends StatefulWidget {
-  final PlayingCard card;
-  MagicCard({Key? key, required this.card}) : super(key: key);
+  final String cardName;
+  const MagicCard({Key? key, required this.cardName}) : super(key: key);
 
   @override
   State<MagicCard> createState() => _MagicCardState();
@@ -14,36 +14,42 @@ class MagicCard extends StatefulWidget {
 class _MagicCardState extends State<MagicCard> {
   Icon? _cardTypeIcon;
   String name = "";
+  Color? cardColor;
 
   initCardInfo() {
-    var type = widget.card.name.split('-');
-
+    final type = widget.cardName.split('-');
     name = type[1];
 
-    if (type[0] == "D") {
-      _cardTypeIcon = const Icon(
-        Icons.crop_square,
-        color: Colors.red,
-      );
-      widget.card.setColor(Colors.red);
-    } else if (type[0] == "H") {
-      _cardTypeIcon = const Icon(
-        Icons.favorite,
-        color: Colors.red,
-      );
-      widget.card.setColor(Colors.red);
-    } else if (type[0] == "C") {
-      _cardTypeIcon = const Icon(
-        Icons.arrow_upward_rounded,
-        color: Colors.black,
-      );
-      widget.card.setColor(Colors.black);
-    } else if (type[0] == "S") {
-      _cardTypeIcon = const Icon(
-        Icons.favorite,
-        color: Colors.black,
-      );
-      widget.card.setColor(Colors.black);
+    switch (type[0]) {
+      case "D":
+        _cardTypeIcon = const Icon(
+          CardsIcons.carreau,
+          color: Colors.red,
+        );
+        cardColor = Colors.red;
+        break;
+      case "H":
+        _cardTypeIcon = const Icon(
+          CardsIcons.coeur,
+          color: Colors.red,
+        );
+        cardColor = Colors.red;
+        break;
+      case "C":
+        _cardTypeIcon = const Icon(
+          CardsIcons.trefle,
+          color: Colors.black,
+        );
+        cardColor = Colors.black;
+        break;
+      case "S":
+        _cardTypeIcon = const Icon(
+          CardsIcons.pique,
+          color: Colors.black,
+        );
+        cardColor = Colors.black;
+        break;
+      default:
     }
   }
 
@@ -69,7 +75,7 @@ class _MagicCardState extends State<MagicCard> {
             padding: const EdgeInsets.only(left: 5),
             child: Text(
               name,
-              style: TextStyle(fontSize: 20, color: widget.card.textColor, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 20, color: cardColor, fontWeight: FontWeight.bold),
             ),
           ),
           _cardTypeIcon!,
