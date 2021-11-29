@@ -3,8 +3,7 @@ import 'package:magician_app/utils/constants.dart';
 
 class CustomDropDown extends StatefulWidget {
   final List<DropdownMenuItem<int>> items;
-  final int defaultSelectedItem;
-  const CustomDropDown({Key? key, required this.items, this.defaultSelectedItem = 0}) : super(key: key);
+  const CustomDropDown({Key? key, required this.items}) : super(key: key);
 
   @override
   State<CustomDropDown> createState() => _CustomDropDownState();
