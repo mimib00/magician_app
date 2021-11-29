@@ -5,10 +5,17 @@ import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// This class manage the state of difrent elements of the app
 class DataManager extends ChangeNotifier {
+  //Color data for the cards
+  Color? backgroundColor;
+  Color? coeurCarreau;
+  Color? treflePique;
+
   bool hasPermission = false;
 
   List<CameraDescription> _cameras = []; // store the available cameras for later use
@@ -79,5 +86,56 @@ class DataManager extends ChangeNotifier {
     final recentAssets = await recentAlbum.getAssetListPaged(_currentPage, _pageSize);
     images = recentAssets;
     notifyListeners();
+  }
+
+  void setCardProps(String key, Color color) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt(key, color.value);
+    getCardProps();
+    notifyListeners();
+  }
+
+  void initCardProps() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List keys = [
+      "card_background",
+      "coeur_carreau",
+      "trefle_pique",
+    ];
+
+    for (var i = 0; i < 3; i++) {
+      prefs.setInt(keys[i], Colors.white.value);
+    }
+    notifyListeners();
+  }
+
+  void getCardProps() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var keys = prefs.getKeys().toList();
+    if (keys.length != 3) {
+      print(keys.length);
+      initCardProps();
+    }
+
+    for (var key in keys) {
+      switch (key) {
+        case "card_background":
+          var value = prefs.getInt("card_background");
+          var colorCode = int.parse(value.toString());
+          backgroundColor = Color(colorCode);
+          break;
+        case "coeur_carreau":
+          var value = prefs.getInt("coeur_carreau");
+          var colorCode = int.parse(value.toString());
+          coeurCarreau = Color(colorCode);
+          break;
+        case "trefle_pique":
+          var value = prefs.getInt("trefle_pique");
+          var colorCode = int.parse(value.toString());
+          treflePique = Color(colorCode);
+          break;
+        default:
+      }
+    }
   }
 }

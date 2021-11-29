@@ -1,19 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:magician_app/provider/data_manager.dart';
 import 'package:magician_app/utils/constants.dart';
+import 'package:provider/provider.dart';
 
 class ColorDropDown extends StatefulWidget {
-  final Color initialColor;
+  final Color? initialColor;
+  final String id;
   final List<Color> items;
-  ColorDropDown({Key? key, required this.items, required this.initialColor}) : super(key: key);
+  const ColorDropDown({Key? key, required this.items, required this.initialColor, required this.id}) : super(key: key);
 
   @override
   State<ColorDropDown> createState() => _ColorDropDownState();
 }
 
 class _ColorDropDownState extends State<ColorDropDown> {
+  Color? selectedColor;
   @override
   Widget build(BuildContext context) {
-    Color selectedColor = widget.initialColor;
+    switch (widget.id) {
+      case "card_background":
+        selectedColor = context.watch<DataManager>().backgroundColor!;
+        break;
+      case "coeur_carreau":
+        selectedColor = context.watch<DataManager>().coeurCarreau!;
+        break;
+      case "trefle_pique":
+        selectedColor = context.watch<DataManager>().treflePique!;
+        break;
+      default:
+    }
+
     return Container(
       width: MediaQuery.of(context).size.width * .4,
       height: 42,
@@ -28,7 +44,7 @@ class _ColorDropDownState extends State<ColorDropDown> {
         child: DropdownButton<Color>(
           selectedItemBuilder: (context) {
             return widget.items.map((Color color) {
-              return DropdownMenuItem<Color>(
+              return DropdownMenuItem<Color?>(
                 value: color,
                 child: Container(
                   width: 120,
@@ -43,9 +59,7 @@ class _ColorDropDownState extends State<ColorDropDown> {
           },
           value: selectedColor,
           onChanged: (Color? value) {
-            setState(() {
-              selectedColor = value!;
-            });
+            context.read<DataManager>().setCardProps(widget.id, value!);
           },
           items: widget.items.map((Color color) {
             return DropdownMenuItem<Color>(

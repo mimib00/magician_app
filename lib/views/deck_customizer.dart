@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:magician_app/provider/data_manager.dart';
 import 'package:magician_app/utils/cards_icons_icons.dart';
 import 'package:magician_app/utils/constants.dart';
 import 'package:magician_app/widgets/card.dart';
 import 'package:magician_app/widgets/color_dropdown.dart';
 import 'package:magician_app/widgets/custom_drop_down.dart';
+
+import 'package:provider/provider.dart';
 
 class DeckCustomizer extends StatelessWidget {
   const DeckCustomizer({Key? key}) : super(key: key);
@@ -94,14 +97,15 @@ class DeckCustomizer extends StatelessWidget {
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
+              children: const [
+                Text(
                   "Background",
                   style: TextStyle(color: Color(0xff8390C1), fontSize: 18, fontWeight: FontWeight.normal),
                 ),
                 ColorDropDown(
+                  id: 'card_background',
                   initialColor: Colors.white,
-                  items: const [
+                  items: [
                     Colors.white,
                     Colors.red,
                     Colors.black,
@@ -133,9 +137,10 @@ class DeckCustomizer extends StatelessWidget {
                     ],
                   ),
                 ),
-                ColorDropDown(
+                const ColorDropDown(
+                  id: "coeur_carreau",
                   initialColor: Colors.red,
-                  items: const [
+                  items: [
                     Colors.white,
                     Colors.red,
                     Colors.black,
@@ -167,9 +172,10 @@ class DeckCustomizer extends StatelessWidget {
                     ],
                   ),
                 ),
-                ColorDropDown(
+                const ColorDropDown(
+                  id: "trefle_pique",
                   initialColor: Colors.black,
-                  items: const [
+                  items: [
                     Colors.white,
                     Colors.red,
                     Colors.black,
@@ -185,29 +191,3 @@ class DeckCustomizer extends StatelessWidget {
     );
   }
 }
-
-/*Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Icon(
-                        CardsIcons.coeur,
-                        color: Colors.white,
-                        size: 35,
-                      ),
-                      Icon(
-                        CardsIcons.carreau,
-                        color: Colors.white,
-                        size: 35,
-                      ),
-                      Icon(
-                        CardsIcons.trefle,
-                        color: Colors.white,
-                        size: 35,
-                      ),
-                      Icon(
-                        CardsIcons.pique,
-                        color: Colors.white,
-                        size: 35,
-                      ),
-                    ],
-                  )*/
