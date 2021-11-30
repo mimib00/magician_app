@@ -27,7 +27,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
       itemCount: context.watch<DataManager>().images.length,
       itemBuilder: (_, index) {
         return AssetThumbnail(
-          asset: context.read<DataManager>().images[index],
+          asset: context.watch<DataManager>().images[index],
         );
       },
     );

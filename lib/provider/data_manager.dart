@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:magician_app/widgets/card.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -72,7 +73,7 @@ class DataManager extends ChangeNotifier {
   }
 
   void _init() async {
-    var result = await PhotoManager.requestPermissionExtend();
+    final result = await PhotoManager.requestPermissionExtend();
     hasPermission = result.isAuth;
   }
 
@@ -91,14 +92,25 @@ class DataManager extends ChangeNotifier {
   /// Initilize card props if they are null.
   void initCardProps() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List keys = [
+    final List<String> keys = [
       "card_background",
       "coeur_carreau",
       "trefle_pique",
     ];
 
-    for (var i = 0; i < 3; i++) {
-      prefs.setInt(keys[i], Colors.white.value);
+    for (var key in keys) {
+      switch (key) {
+        case "card_background":
+          prefs.setInt(key, Colors.white.value);
+          break;
+        case "coeur_carreau":
+          prefs.setInt(key, Colors.red.value);
+          break;
+        case "trefle_pique":
+          prefs.setInt(key, Colors.black.value);
+          break;
+        default:
+      }
     }
     notifyListeners();
   }
