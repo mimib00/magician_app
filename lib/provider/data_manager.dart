@@ -6,7 +6,6 @@ import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:magician_app/widgets/card.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -102,12 +101,15 @@ class DataManager extends ChangeNotifier {
       switch (key) {
         case "card_background":
           prefs.setInt(key, Colors.white.value);
+          backgroundColor = Colors.white;
           break;
         case "coeur_carreau":
           prefs.setInt(key, Colors.red.value);
+          coeurCarreau = Colors.red;
           break;
         case "trefle_pique":
           prefs.setInt(key, Colors.black.value);
+          treflePique = Colors.black;
           break;
         default:
       }
@@ -127,8 +129,9 @@ class DataManager extends ChangeNotifier {
   void getCardProps() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var keys = prefs.getKeys().toList();
-    if (keys.length != 3) {
+    if (keys.length < 3) {
       initCardProps();
+      return;
     }
 
     for (var key in keys) {

@@ -104,7 +104,7 @@ class DeckCustomizer extends StatelessWidget {
                 ),
                 ColorDropDown(
                   id: 'card_background',
-                  initialColor: context.read<DataManager>().backgroundColor!.value,
+                  initialColor: context.watch<DataManager>().backgroundColor!.value,
                   items: const [
                     Colors.white,
                     Colors.red,
@@ -139,7 +139,7 @@ class DeckCustomizer extends StatelessWidget {
                 ),
                 ColorDropDown(
                   id: "coeur_carreau",
-                  initialColor: context.read<DataManager>().coeurCarreau!.value,
+                  initialColor: context.watch<DataManager>().coeurCarreau!.value,
                   items: const [
                     Colors.white,
                     Colors.red,
@@ -174,7 +174,7 @@ class DeckCustomizer extends StatelessWidget {
                 ),
                 ColorDropDown(
                   id: "trefle_pique",
-                  initialColor: context.read<DataManager>().treflePique!.value,
+                  initialColor: context.watch<DataManager>().treflePique!.value,
                   items: const [
                     Colors.white,
                     Colors.red,
