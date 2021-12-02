@@ -24,7 +24,11 @@ class AssetThumbnail extends StatelessWidget {
         if (bytes == null) return const Center(child: CircularProgressIndicator(color: primaryColor));
         // If there's data, display it as an image
         return GestureDetector(
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => EditorScreen(image: asset))),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => EditorScreen(
+                    image: asset,
+                    size: Size(asset.width.toDouble(), asset.height.toDouble()),
+                  ))),
           child: Container(
             margin: const EdgeInsets.all(5),
             child: ClipRRect(

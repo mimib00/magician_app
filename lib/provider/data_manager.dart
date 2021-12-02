@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:magician_app/widgets/card.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,8 +19,12 @@ class DataManager extends ChangeNotifier {
 
   bool hasPermission = false;
 
+  List<Widget> _cards = [];
+
   List<CameraDescription> _cameras = []; // store the available cameras for later use
   late CameraController _controller;
+
+  AssetEntity? image;
 
   List<AssetEntity> images = [];
   List<Uint8List?> thumbs = [];
@@ -30,6 +35,7 @@ class DataManager extends ChangeNotifier {
   int _currentPage = 0;
   int _pageSize = 100;
 
+  List<Widget> get cards => _cards;
   List<CameraDescription> get cameras => _cameras;
   CameraController get controller => _controller;
 
@@ -85,6 +91,23 @@ class DataManager extends ChangeNotifier {
 
     final recentAssets = await recentAlbum.getAssetListPaged(_currentPage, _pageSize);
     images = recentAssets;
+    notifyListeners();
+  }
+
+  void getImage() async {
+    final albums = await PhotoManager.getAssetPathList(
+      type: RequestType.image,
+      filterOption: FilterOptionGroup(
+        orders: [
+          const OrderOption(type: OrderOptionType.createDate, asc: true),
+        ],
+      ),
+    );
+
+    final album = albums.where((AssetPathEntity element) => element.name == "Magician App").toList().first;
+    final lastAsset = await album.getAssetListPaged(0, album.assetCount);
+    lastAsset.sort((a, b) => a.createDateTime.compareTo(b.createDateTime));
+    image = lastAsset.last;
     notifyListeners();
   }
 
@@ -154,5 +177,20 @@ class DataManager extends ChangeNotifier {
         default:
       }
     }
+  }
+
+  void addCards(String name) {
+    _cards.add(
+      Positioned(
+        top: 0,
+        left: 100,
+        child: MagicCard(cardName: name),
+      ),
+    );
+    notifyListeners();
+  }
+
+  void disposeCards() {
+    _cards.clear();
   }
 }

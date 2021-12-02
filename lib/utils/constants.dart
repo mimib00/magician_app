@@ -5,6 +5,9 @@ const Color primaryColor = Color(0xffB749F4);
 const Color secondaryColor = Color(0xffE4797F);
 const Color mainGrayColor = Color(0xffe7e7e7);
 
+double kWidth(BuildContext context) => MediaQuery.of(context).size.width;
+double kHeight(BuildContext context) => MediaQuery.of(context).size.height;
+
 const cardsList = [
   'S-A',
   'S-2',

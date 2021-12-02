@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:magician_app/provider/data_manager.dart';
 import 'package:magician_app/utils/constants.dart';
 import 'package:magician_app/utils/magician_icons_icons.dart';
+import 'package:magician_app/views/editor.dart';
 import 'package:provider/provider.dart';
 import 'package:blur/blur.dart';
 
@@ -29,11 +30,19 @@ class _CameraScreenState extends State<CameraScreen> {
     super.initState();
   }
 
-  @override
-  void dispose() {
-    // Dispose of the controller when the widget is disposed.
-    context.read<DataManager>().disposeController();
-    super.dispose();
+  void takePicture(CameraController controller) async {
+    final image = await controller.takePicture();
+
+    final path = image.path;
+
+    await AddToGallery.addToGallery(
+      originalFile: File(path),
+      albumName: 'Magician App',
+      deleteOriginalFile: true,
+    );
+    context.read<DataManager>().getImage();
+    var img = context.watch<DataManager>().image;
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => EditorScreen(image: img!, size: img.size)));
   }
 
   @override
@@ -94,17 +103,7 @@ class _CameraScreenState extends State<CameraScreen> {
                               ),
                               const SizedBox(width: 25),
                               GestureDetector(
-                                onTap: () async {
-                                  final image = await _controller.takePicture();
-
-                                  final path = image.path;
-
-                                  await AddToGallery.addToGallery(
-                                    originalFile: File(path),
-                                    albumName: 'Camera Demo',
-                                    deleteOriginalFile: true,
-                                  );
-                                },
+                                onTap: () => takePicture(_controller),
                                 child: const CircleAvatar(
                                   backgroundColor: mainGrayColor,
                                   radius: 35,
