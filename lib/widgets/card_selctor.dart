@@ -24,9 +24,9 @@ class _CardSelectorState extends State<CardSelector> {
       var cardnumber = random.nextInt(52);
       cards.add(
         GestureDetector(
-          onTap: () => context.read<DataManager>().addCards(cardsList[cardnumber]),
-          child: MagicCard(
-            cardName: cardsList[cardnumber],
+          // onTap: () => context.read<DataManager>().addCards(cardsList[cardnumber]),
+          child: PlayingCard(
+            cardsList[cardnumber],
           ),
         ),
       );
@@ -47,32 +47,3 @@ class _CardSelectorState extends State<CardSelector> {
     );
   }
 }
-
-/*Draggable<MagicCard>(
-          key: Key(i.toString()),
-          feedback: MagicCard(
-            cardName: cardsList[cardnumber],
-          ),
-          onDragStarted: () {
-            var card = cards.where((element) => element.key == Key(i.toString())).first;
-            setDragedCard(card);
-            setState(() {
-              cards.removeWhere((element) => element.key == Key(i.toString()));
-            });
-          },
-          onDragEnd: (details) {
-            restDragedCard();
-          },
-          onDragCompleted: () {
-            restDragedCard();
-          },
-          onDraggableCanceled: (velocity, offset) {
-            setState(() {
-              cards.insert(i, _dragedCard!);
-            });
-            restDragedCard();
-          },
-          child: MagicCard(
-            cardName: cardsList[cardnumber],
-          ),
-        ),*/

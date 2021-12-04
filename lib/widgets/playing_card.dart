@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -11,7 +13,7 @@ typedef StickeImageRemoveCallback = void Function(PlayingCard sticker);
 
 class PlayingCard extends StatefulWidget {
   const PlayingCard(
-    this.cardName, {
+    this.name, {
     Key? key,
     this.width,
     this.height,
@@ -21,7 +23,7 @@ class PlayingCard extends StatefulWidget {
     this.onTapRemove,
   }) : super(key: key);
 
-  final String cardName;
+  final String name;
   final double? width;
   final double? height;
   final Size? viewport;
@@ -42,9 +44,9 @@ class _PlayingCardState extends State<PlayingCard> {
   double _scale = 1.0;
   double _previousScale = 1.0;
 
-  Offset _previousOffset = Offset(0, 0);
-  Offset _startingFocalPoint = Offset(0, 0);
-  Offset _offset = Offset(0, 0);
+  Offset _previousOffset = Offset.zero;
+  Offset _startingFocalPoint = Offset.zero;
+  Offset _offset = Offset.zero;
 
   double _rotation = 0.0;
   double _previousRotation = 0.0;
@@ -54,14 +56,14 @@ class _PlayingCardState extends State<PlayingCard> {
   @override
   void dispose() {
     super.dispose();
-    _offset = Offset(0, 0);
+    _offset = Offset.zero;
     _scale = 1.0;
   }
 
   @override
   Widget build(BuildContext context) {
-    final type = widget.cardName.split('-');
-    var name = type[1];
+    final type = widget.name.split('-');
+    var symbol = type[1];
 
     switch (type[0]) {
       case "D":
@@ -94,34 +96,14 @@ class _PlayingCardState extends State<PlayingCard> {
         break;
       default:
     }
-    var child = Container(
-      height: 100,
-      width: 70,
-      padding: const EdgeInsets.all(5),
-      margin: const EdgeInsets.all(5),
-      decoration: BoxDecoration(color: context.watch<DataManager>().backgroundColor, borderRadius: BorderRadius.circular(10)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        textBaseline: TextBaseline.ideographic,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 5),
-            child: Text(
-              name,
-              style: TextStyle(fontSize: 20, color: cardColor, fontWeight: FontWeight.bold),
-            ),
-          ),
-          _cardTypeIcon!,
-        ],
-      ),
-    );
+
     return Positioned.fromRect(
       rect: Rect.fromPoints(Offset(_offset.dx, _offset.dy), Offset(_offset.dx + widget.width!, _offset.dy + widget.height!)),
       child: Stack(
         children: [
           Center(
             child: Transform(
-              transform: Matrix4.diagonal3(Vector3(_scale, _scale, _scale))..setRotationZ(_rotation),
+              transform: Matrix4.diagonal3(Vector3(_scale, _scale, _scale)),
               alignment: FractionalOffset.center,
               child: GestureDetector(
                 onScaleStart: (ScaleStartDetails details) {
@@ -130,8 +112,7 @@ class _PlayingCardState extends State<PlayingCard> {
                   _previousRotation = _rotation;
                   _previousScale = _scale;
 
-                  // print(
-                  //     "begin - focal : ${details.focalPoint}, local : ${details.localFocalPoint}");
+                  print("begin - focal : ${details.focalPoint}, local : ${details.localFocalPoint}");
                 },
                 onScaleUpdate: (ScaleUpdateDetails details) {
                   _scale = min(max(_previousScale * details.scale, widget.minScale), widget.maxScale);
@@ -148,7 +129,7 @@ class _PlayingCardState extends State<PlayingCard> {
 
                   setState(() {
                     _offset = __offset;
-                    // print("move - $_offset, scale : $_scale");
+                    print("move - $_offset, scale : $_scale");
                   });
                 },
                 onTap: () {
@@ -166,36 +147,49 @@ class _PlayingCardState extends State<PlayingCard> {
                     _scale = 1.0;
                   });
                 },
-                child: child,
+                child: Container(
+                  width: widget.width,
+                  height: widget.height,
+                  decoration: BoxDecoration(color: context.watch<DataManager>().backgroundColor, borderRadius: BorderRadius.circular(10)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    textBaseline: TextBaseline.ideographic,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 5),
+                        child: Text(
+                          symbol,
+                          style: TextStyle(fontSize: 20, color: cardColor, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      _cardTypeIcon!,
+                    ],
+                  ),
+                ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
   }
 }
 
-class MagicCard extends StatefulWidget {
+class StaticPlayingCard extends StatelessWidget {
   final String cardName;
-  const MagicCard(this.cardName, {Key? key}) : super(key: key);
+  final double height;
+  final double width;
+  StaticPlayingCard(this.cardName, {Key? key, this.height = 100, this.width = 70}) : super(key: key);
 
-  @override
-  State<MagicCard> createState() => _MagicCardState();
-}
-
-class _MagicCardState extends State<MagicCard> {
   Icon? _cardTypeIcon;
 
   String name = "";
 
   Color? cardColor;
 
-  Offset offset = Offset.zero;
-
   @override
   Widget build(BuildContext context) {
-    final type = widget.cardName.split('-');
+    final type = cardName.split('-');
     name = type[1];
 
     switch (type[0]) {
@@ -231,8 +225,8 @@ class _MagicCardState extends State<MagicCard> {
     }
 
     var child = Container(
-      height: 100,
-      width: 70,
+      height: height,
+      width: width,
       padding: const EdgeInsets.all(5),
       margin: const EdgeInsets.all(5),
       decoration: BoxDecoration(color: context.watch<DataManager>().backgroundColor, borderRadius: BorderRadius.circular(10)),
@@ -251,7 +245,6 @@ class _MagicCardState extends State<MagicCard> {
         ],
       ),
     );
-
     return child;
   }
 }

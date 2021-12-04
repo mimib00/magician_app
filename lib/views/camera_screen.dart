@@ -42,7 +42,7 @@ class _CameraScreenState extends State<CameraScreen> {
     );
     context.read<DataManager>().getImage();
     var img = context.watch<DataManager>().image;
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => EditorScreen(image: img!, size: img.size)));
+    // Navigator.of(context).push(MaterialPageRoute(builder: (_) => EditorScreen(image: img!, size: img.size)));
   }
 
   @override

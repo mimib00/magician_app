@@ -6,7 +6,7 @@ import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:magician_app/widgets/card.dart';
+import 'package:magician_app/models/working_modes.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,7 +19,9 @@ class DataManager extends ChangeNotifier {
 
   bool hasPermission = false;
 
-  List<Widget> _cards = [];
+  WorkingMode workingMode = WorkingMode.none;
+
+  List<Widget> _items = [];
 
   List<CameraDescription> _cameras = []; // store the available cameras for later use
   late CameraController _controller;
@@ -30,12 +32,14 @@ class DataManager extends ChangeNotifier {
   List<Uint8List?> thumbs = [];
   List<File?> files = [];
 
+  AssetEntity? workingImage;
+
   double _scale = 0;
 
   int _currentPage = 0;
   int _pageSize = 100;
 
-  List<Widget> get cards => _cards;
+  List<Widget> get items => _items;
   List<CameraDescription> get cameras => _cameras;
   CameraController get controller => _controller;
 
@@ -43,6 +47,11 @@ class DataManager extends ChangeNotifier {
 
   set setCurrentPage(int page) => _currentPage = page;
   set setPageSize(int size) => _pageSize = size;
+
+  setWorkingImage(AssetEntity image) {
+    workingImage = image;
+    notifyListeners();
+  }
 
   initializeCamera(int cameraIndex, context) async {
     _controller = CameraController(
@@ -177,20 +186,5 @@ class DataManager extends ChangeNotifier {
         default:
       }
     }
-  }
-
-  void addCards(String name) {
-    _cards.add(
-      Positioned(
-        top: 0,
-        left: 100,
-        child: MagicCard(cardName: name),
-      ),
-    );
-    notifyListeners();
-  }
-
-  void disposeCards() {
-    _cards.clear();
   }
 }

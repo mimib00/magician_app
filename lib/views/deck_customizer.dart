@@ -5,6 +5,7 @@ import 'package:magician_app/utils/constants.dart';
 import 'package:magician_app/widgets/card.dart';
 import 'package:magician_app/widgets/color_dropdown.dart';
 import 'package:magician_app/widgets/custom_drop_down.dart';
+import 'package:magician_app/widgets/playing_card.dart';
 
 import 'package:provider/provider.dart';
 
@@ -29,17 +30,17 @@ class DeckCustomizer extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  MagicCard(
-                    cardName: "H-A",
+                  StaticPlayingCard(
+                    "H-A",
                   ),
-                  MagicCard(
-                    cardName: "C-7",
+                  StaticPlayingCard(
+                    "C-7",
                   ),
-                  MagicCard(
-                    cardName: "D-9",
+                  StaticPlayingCard(
+                    "D-9",
                   ),
-                  MagicCard(
-                    cardName: "S-5",
+                  StaticPlayingCard(
+                    "S-5",
                   ),
                 ],
               ),
