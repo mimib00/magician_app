@@ -75,7 +75,7 @@ class _PhotoEditorState extends State<PhotoEditor> {
         viewport: viewport,
         maxScale: widget.stickerMaxScale,
         minScale: widget.stickerMinScale,
-        onTapRemove: onTapRemoveSticker,
+        onTapRemove: onTapRemoveCard,
       ));
     });
   }
@@ -144,7 +144,10 @@ class _PhotoEditorState extends State<PhotoEditor> {
                               viewport = viewport ?? Size(constraints.maxWidth, constraints.maxHeight);
                               return Padding(
                                 padding: const EdgeInsets.all(10),
-                                child: Image.file(file),
+                                child: Image.file(
+                                  file,
+                                  fit: BoxFit.fitWidth,
+                                ),
                               );
                             },
                           ),
@@ -209,9 +212,9 @@ class _PhotoEditorState extends State<PhotoEditor> {
     );
   }
 
-  void onTapRemoveSticker(PlayingCard sticker) {
+  void onTapRemoveCard(PlayingCard card) {
     setState(() {
-      attachedList.removeWhere((s) => s.key == sticker.key);
+      attachedList.removeWhere((s) => s.key == card.key);
     });
   }
 }

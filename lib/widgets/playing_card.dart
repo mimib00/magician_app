@@ -6,11 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:magician_app/provider/data_manager.dart';
 import 'package:magician_app/utils/cards_icons_icons.dart';
 import 'package:provider/provider.dart';
-import 'package:screenshot/screenshot.dart';
 
 import 'package:vector_math/vector_math_64.dart' as vector;
 
-typedef StickeImageRemoveCallback = void Function(PlayingCard sticker);
+typedef CardRemoveCallback = void Function(PlayingCard card);
 
 class PlayingCard extends StatefulWidget {
   const PlayingCard(
@@ -32,7 +31,7 @@ class PlayingCard extends StatefulWidget {
   final double minScale;
   final double maxScale;
 
-  final StickeImageRemoveCallback? onTapRemove;
+  final CardRemoveCallback? onTapRemove;
 
   @override
   _PlayingCardState createState() => _PlayingCardState();
@@ -100,10 +99,7 @@ class _PlayingCardState extends State<PlayingCard> {
     // print("H:${widget.height}, W:${widget.width}");
     return Positioned.fromRect(
       rect: Rect.fromPoints(Offset(_offset.dx, _offset.dy), Offset(_offset.dx + widget.width!, _offset.dy + widget.height!)),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
+      child: Stack(
         children: [
           Center(
             child: Transform(
@@ -173,13 +169,19 @@ class _PlayingCardState extends State<PlayingCard> {
               ),
             ),
           ),
+          const SizedBox(width: 10),
           _isSelected
-              ? SizedBox.shrink(
+              ? Positioned(
+                  right: 0,
+                  top: 0,
+                  height: 24,
+                  width: 24,
                   child: IconButton(
                     padding: EdgeInsets.zero,
                     icon: const Icon(Icons.remove_circle),
                     color: Colors.red,
                     onPressed: () {
+                      print('tapped remove sticker');
                       if (widget.onTapRemove != null) {
                         widget.onTapRemove!((widget));
                       }
