@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:magician_app/utils/constants.dart';
 import 'package:magician_app/widgets/playing_card.dart';
 
 class PhotoEditor extends StatefulWidget {
@@ -7,7 +6,8 @@ class PhotoEditor extends StatefulWidget {
     this.source,
     this.cards, {
     Key? key,
-    this.stickerSize = 100.0,
+    this.stickerWidth = 70.0,
+    this.stickerHeight = 100.0,
     this.stickerMaxScale = 2.0,
     this.stickerMinScale = 0.5,
     this.panelHeight = 200.0,
@@ -20,7 +20,8 @@ class PhotoEditor extends StatefulWidget {
   final Widget source;
   final List<String> cards;
 
-  final double stickerSize;
+  final double stickerWidth;
+  final double stickerHeight;
   final double stickerMaxScale;
   final double stickerMinScale;
 
@@ -47,13 +48,13 @@ class _PhotoEditorState extends State<PhotoEditor> {
       attachedList.add(PlayingCard(
         name,
         key: Key("sticker_${attachedList.length}"),
-        width: widget.stickerSize,
-        height: widget.stickerSize,
+        width: widget.stickerWidth,
+        height: widget.stickerHeight,
         viewport: viewport,
         maxScale: widget.stickerMaxScale,
         minScale: widget.stickerMinScale,
-        onTapRemove: (sticker) {
-          // this.onTapRemoveSticker(sticker);
+        onTapRemove: (card) {
+          onTapRemoveSticker(card);
         },
       ));
     });
@@ -92,52 +93,13 @@ class _PhotoEditorState extends State<PhotoEditor> {
                   ),
                 )
                 .toList()),
-        // GridView.builder(
-        //   padding: EdgeInsets.zero,
-        //   scrollDirection: Axis.vertical,
-        //   itemCount: widget.cardsList.length,
-        //   itemBuilder: (BuildContext context, int i) {
-        //     return Container(
-        //       color: backgroundColor,
-        //       child: TextButton(
-        //           onPressed: () {
-        //             attachSticker(widget.cardsList[i]);
-        //           },
-        //           child: StaticPlayingCard(widget.cardsList[i])),
-        //     );
-        //   },
-        //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: this.widget.panelStickercrossAxisCount, childAspectRatio: this.widget.panelStickerAspectRatio),
-        // ),
-        // DragTarget(
-        //   builder: (BuildContext context, List<String?> candidateData, List<dynamic> rejectedData) {
-        //     return Container(
-        //       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        //       color: backgroundColor,
-        //       child: GridView.builder(
-        //         padding: EdgeInsets.zero,
-        //         scrollDirection: Axis.vertical,
-        //         itemCount: widget.cardsList.length,
-        //         itemBuilder: (BuildContext context, int i) {
-        //           return Padding(
-        //             padding: const EdgeInsets.all(8.0),
-        //             child: Container(
-        //               color: backgroundColor,
-        //               child: TextButton(
-        //                   onPressed: () {
-        //                     attachSticker(widget.cardsList[i]);
-        //                   },
-        //                   child: StaticPlayingCard(widget.cardsList[i])),
-        //             ),
-        //           );
-        //         },
-        //         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: this.widget.panelStickercrossAxisCount, childAspectRatio: this.widget.panelStickerAspectRatio),
-        //       ),
-        //       height: widget.panelHeight,
-        //     );
-        //   },
-        // )
-        // Scrollbar(child: child)
       ],
     );
+  }
+
+  void onTapRemoveSticker(PlayingCard sticker) {
+    setState(() {
+      attachedList.removeWhere((s) => s.key == sticker.key);
+    });
   }
 }

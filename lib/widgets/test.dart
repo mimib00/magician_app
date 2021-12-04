@@ -253,27 +253,28 @@ class _FlutterSimpleStickerViewState extends State<FlutterSimpleStickerView> {
           child: DragTarget(
             builder: (BuildContext context, List<String?> candidateData, List<dynamic> rejectedData) {
               return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  color: this.widget.panelBackgroundColor,
-                  child: GridView.builder(
-                    padding: EdgeInsets.zero,
-                    scrollDirection: Axis.vertical,
-                    itemCount: widget.stickerList.length,
-                    itemBuilder: (BuildContext context, int i) {
-                      return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            color: this.widget.panelStickerBackgroundColor,
-                            child: TextButton(
-                                onPressed: () {
-                                  attachSticker(widget.stickerList[i]);
-                                },
-                                child: MagicCard(widget.stickerList[i])),
-                          ));
-                    },
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: this.widget.panelStickercrossAxisCount, childAspectRatio: this.widget.panelStickerAspectRatio),
-                  ),
-                  height: this.widget.panelHeight);
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                color: this.widget.panelBackgroundColor,
+                child: GridView.builder(
+                  padding: EdgeInsets.zero,
+                  scrollDirection: Axis.vertical,
+                  itemCount: widget.stickerList.length,
+                  itemBuilder: (BuildContext context, int i) {
+                    return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          color: this.widget.panelStickerBackgroundColor,
+                          child: TextButton(
+                              onPressed: () {
+                                attachSticker(widget.stickerList[i]);
+                              },
+                              child: MagicCard(widget.stickerList[i])),
+                        ));
+                  },
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: this.widget.panelStickercrossAxisCount, childAspectRatio: this.widget.panelStickerAspectRatio),
+                ),
+                height: widget.panelHeight,
+              );
             },
           ),
         ),

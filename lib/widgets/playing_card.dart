@@ -7,7 +7,7 @@ import 'package:magician_app/provider/data_manager.dart';
 import 'package:magician_app/utils/cards_icons_icons.dart';
 import 'package:provider/provider.dart';
 
-import 'package:vector_math/vector_math_64.dart';
+import 'package:vector_math/vector_math_64.dart' as vector;
 
 typedef StickeImageRemoveCallback = void Function(PlayingCard sticker);
 
@@ -15,8 +15,8 @@ class PlayingCard extends StatefulWidget {
   const PlayingCard(
     this.name, {
     Key? key,
-    this.width,
-    this.height,
+    this.width = 70,
+    this.height = 100,
     this.viewport,
     this.minScale = 1.0,
     this.maxScale = 2.0,
@@ -96,14 +96,14 @@ class _PlayingCardState extends State<PlayingCard> {
         break;
       default:
     }
-
+    print("H:${widget.height}, W:${widget.width}");
     return Positioned.fromRect(
       rect: Rect.fromPoints(Offset(_offset.dx, _offset.dy), Offset(_offset.dx + widget.width!, _offset.dy + widget.height!)),
       child: Stack(
         children: [
           Center(
             child: Transform(
-              transform: Matrix4.diagonal3(Vector3(_scale, _scale, _scale)),
+              transform: Matrix4.diagonal3(vector.Vector3(_scale, _scale, _scale)),
               alignment: FractionalOffset.center,
               child: GestureDetector(
                 onScaleStart: (ScaleStartDetails details) {
@@ -169,6 +169,24 @@ class _PlayingCardState extends State<PlayingCard> {
               ),
             ),
           ),
+          _isSelected
+              ? Positioned(
+                  left: 12,
+                  height: 24,
+                  width: 24,
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    icon: const Icon(Icons.remove_circle),
+                    color: Colors.red,
+                    onPressed: () {
+                      print('tapped remove sticker');
+                      if (widget.onTapRemove != null) {
+                        widget.onTapRemove!((widget));
+                      }
+                    },
+                  ),
+                )
+              : Container(),
         ],
       ),
     );
