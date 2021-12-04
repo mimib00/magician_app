@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:magician_app/provider/data_manager.dart';
 import 'package:magician_app/utils/cards_icons_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:screenshot/screenshot.dart';
 
 import 'package:vector_math/vector_math_64.dart' as vector;
 
@@ -96,10 +97,13 @@ class _PlayingCardState extends State<PlayingCard> {
         break;
       default:
     }
-    print("H:${widget.height}, W:${widget.width}");
+    // print("H:${widget.height}, W:${widget.width}");
     return Positioned.fromRect(
       rect: Rect.fromPoints(Offset(_offset.dx, _offset.dy), Offset(_offset.dx + widget.width!, _offset.dy + widget.height!)),
-      child: Stack(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
         children: [
           Center(
             child: Transform(
@@ -112,7 +116,7 @@ class _PlayingCardState extends State<PlayingCard> {
                   _previousRotation = _rotation;
                   _previousScale = _scale;
 
-                  print("begin - focal : ${details.focalPoint}, local : ${details.localFocalPoint}");
+                  // print("begin - focal : ${details.focalPoint}, local : ${details.localFocalPoint}");
                 },
                 onScaleUpdate: (ScaleUpdateDetails details) {
                   _scale = min(max(_previousScale * details.scale, widget.minScale), widget.maxScale);
@@ -129,7 +133,7 @@ class _PlayingCardState extends State<PlayingCard> {
 
                   setState(() {
                     _offset = __offset;
-                    print("move - $_offset, scale : $_scale");
+                    // print("move - $_offset, scale : $_scale");
                   });
                 },
                 onTap: () {
@@ -170,16 +174,12 @@ class _PlayingCardState extends State<PlayingCard> {
             ),
           ),
           _isSelected
-              ? Positioned(
-                  left: 12,
-                  height: 24,
-                  width: 24,
+              ? SizedBox.shrink(
                   child: IconButton(
                     padding: EdgeInsets.zero,
                     icon: const Icon(Icons.remove_circle),
                     color: Colors.red,
                     onPressed: () {
-                      print('tapped remove sticker');
                       if (widget.onTapRemove != null) {
                         widget.onTapRemove!((widget));
                       }
