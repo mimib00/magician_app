@@ -49,7 +49,7 @@ class PhotoEditor extends StatefulWidget {
 }
 
 class _PhotoEditorState extends State<PhotoEditor> {
-  ScreenshotController _screenshotController = ScreenshotController();
+  final ScreenshotController _screenshotController = ScreenshotController();
   Size? viewport;
   Random random = Random();
 
@@ -174,9 +174,7 @@ class _PhotoEditorState extends State<PhotoEditor> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     CustomIconButton(
-                      onTap: () {
-                        print("Share");
-                      },
+                      onTap: () {},
                       icon: const Icon(
                         MagicianIcons.share,
                         color: Colors.black,

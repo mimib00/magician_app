@@ -1,4 +1,4 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, unused_field
 
 import 'dart:math';
 
@@ -181,7 +181,6 @@ class _PlayingCardState extends State<PlayingCard> {
                     icon: const Icon(Icons.remove_circle),
                     color: Colors.red,
                     onPressed: () {
-                      print('tapped remove sticker');
                       if (widget.onTapRemove != null) {
                         widget.onTapRemove!((widget));
                       }
