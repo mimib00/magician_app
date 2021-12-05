@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:magician_app/provider/data_manager.dart';
 import 'package:magician_app/utils/cards_icons_icons.dart';
+import 'package:magician_app/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 import 'package:vector_math/vector_math_64.dart' as vector;
@@ -52,6 +53,7 @@ class _PlayingCardState extends State<PlayingCard> {
   double _previousRotation = 0.0;
 
   bool _isSelected = false;
+  var symbol = '';
 
   @override
   void dispose() {
@@ -60,10 +62,9 @@ class _PlayingCardState extends State<PlayingCard> {
     _scale = 1.0;
   }
 
-  @override
-  Widget build(BuildContext context) {
+  _getCardInfo() {
     final type = widget.name.split('-');
-    var symbol = type[1];
+    symbol = type[1];
 
     switch (type[0]) {
       case "D":
@@ -96,89 +97,91 @@ class _PlayingCardState extends State<PlayingCard> {
         break;
       default:
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _getCardInfo();
     // print("H:${widget.height}, W:${widget.width}");
     return Positioned.fromRect(
       rect: Rect.fromPoints(Offset(_offset.dx, _offset.dy), Offset(_offset.dx + widget.width!, _offset.dy + widget.height!)),
       child: Stack(
+        fit: StackFit.expand,
         children: [
-          Center(
-            child: Transform(
-              transform: Matrix4.diagonal3(vector.Vector3(_scale, _scale, _scale)),
-              alignment: FractionalOffset.center,
-              child: GestureDetector(
-                onScaleStart: (ScaleStartDetails details) {
-                  _startingFocalPoint = details.focalPoint;
-                  _previousOffset = _offset;
-                  _previousRotation = _rotation;
-                  _previousScale = _scale;
+          Transform(
+            transform: Matrix4.diagonal3(vector.Vector3(_scale, _scale, _scale)),
+            alignment: FractionalOffset.center,
+            child: GestureDetector(
+              onScaleStart: (ScaleStartDetails details) {
+                _startingFocalPoint = details.focalPoint;
+                _previousOffset = _offset;
+                _previousRotation = _rotation;
+                _previousScale = _scale;
 
-                  // print("begin - focal : ${details.focalPoint}, local : ${details.localFocalPoint}");
-                },
-                onScaleUpdate: (ScaleUpdateDetails details) {
-                  _scale = min(max(_previousScale * details.scale, widget.minScale), widget.maxScale);
+                // print("begin - focal : ${details.focalPoint}, local : ${details.localFocalPoint}");
+              },
+              onScaleUpdate: (ScaleUpdateDetails details) {
+                _scale = min(max(_previousScale * details.scale, widget.minScale), widget.maxScale);
 
-                  _rotation = details.rotation;
+                _rotation = details.rotation;
 
-                  final Offset normalizedOffset = (_startingFocalPoint - _previousOffset) / _previousScale;
+                final Offset normalizedOffset = (_startingFocalPoint - _previousOffset) / _previousScale;
 
-                  Offset __offset = details.focalPoint - (normalizedOffset * _scale);
+                Offset __offset = details.focalPoint - (normalizedOffset * _scale);
 
-                  __offset = Offset(max(__offset.dx, -widget.width!), max(__offset.dy, -widget.height!));
+                __offset = Offset(max(__offset.dx, -widget.width!), max(__offset.dy, -widget.height!));
 
-                  __offset = Offset(min(__offset.dx, widget.viewport!.width), min(__offset.dy, widget.viewport!.height));
+                __offset = Offset(min(__offset.dx, widget.viewport!.width), min(__offset.dy, widget.viewport!.height));
 
-                  setState(() {
-                    _offset = __offset;
-                    // print("move - $_offset, scale : $_scale");
-                  });
-                },
-                onTap: () {
-                  setState(() {
-                    _isSelected = !_isSelected;
-                  });
-                },
-                onTapCancel: () {
-                  setState(() {
-                    _isSelected = false;
-                  });
-                },
-                onDoubleTap: () {
-                  setState(() {
-                    _scale = 1.0;
-                  });
-                },
-                child: Container(
-                  width: widget.width,
-                  height: widget.height,
-                  decoration: BoxDecoration(color: context.watch<DataManager>().backgroundColor, borderRadius: BorderRadius.circular(10)),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    textBaseline: TextBaseline.ideographic,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 5),
-                        child: Text(
-                          symbol,
-                          style: TextStyle(fontSize: 20, color: cardColor, fontWeight: FontWeight.bold),
-                        ),
+                setState(() {
+                  _offset = __offset;
+                  // print("move - $_offset, scale : $_scale");
+                });
+              },
+              onTap: () {
+                setState(() {
+                  _isSelected = !_isSelected;
+                });
+              },
+              onTapCancel: () {
+                setState(() {
+                  _isSelected = false;
+                });
+              },
+              onDoubleTap: () {
+                setState(() {
+                  _scale = 1.0;
+                });
+              },
+              child: Container(
+                width: widget.width,
+                height: widget.height,
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(color: context.watch<DataManager>().backgroundColor, borderRadius: BorderRadius.circular(10)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  textBaseline: TextBaseline.ideographic,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 5),
+                      child: Text(
+                        symbol,
+                        style: TextStyle(fontSize: 20, color: cardColor, fontWeight: FontWeight.bold),
                       ),
-                      _cardTypeIcon!,
-                    ],
-                  ),
+                    ),
+                    _cardTypeIcon!,
+                  ],
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 10),
           _isSelected
-              ? Positioned(
-                  right: 0,
-                  top: 0,
-                  height: 24,
-                  width: 24,
+              ? Container(
+                  alignment: Alignment.center,
                   child: IconButton(
+                    iconSize: 24,
                     padding: EdgeInsets.zero,
-                    icon: const Icon(Icons.remove_circle),
+                    icon: const Icon(Icons.delete_forever_rounded),
                     color: Colors.red,
                     onPressed: () {
                       if (widget.onTapRemove != null) {

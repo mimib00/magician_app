@@ -36,7 +36,7 @@ class _CameraScreenState extends State<CameraScreen> {
 
     await AddToGallery.addToGallery(
       originalFile: File(path),
-      albumName: 'Magician App',
+      albumName: 'Camera',
       deleteOriginalFile: true,
     );
     context.read<DataManager>().getImage();

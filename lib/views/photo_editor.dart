@@ -12,15 +12,14 @@ import 'package:magician_app/utils/magician_icons_icons.dart';
 import 'package:magician_app/widgets/custom_button.dart';
 import 'package:magician_app/widgets/playing_card.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:photo_manager/photo_manager.dart';
 import 'package:screenshot/screenshot.dart';
 
 class PhotoEditor extends StatefulWidget {
   const PhotoEditor(
     this.source, {
     Key? key,
-    this.stickerWidth = 70.0,
-    this.stickerHeight = 100.0,
+    this.stickerWidth = 80.0,
+    this.stickerHeight = 110.0,
     this.stickerMaxScale = 2.0,
     this.stickerMinScale = 0.5,
     this.panelHeight = 200.0,
@@ -30,7 +29,7 @@ class PhotoEditor extends StatefulWidget {
     this.panelStickerAspectRatio = 1.0,
     this.devicePixelRatio = 3.0,
   }) : super(key: key);
-  final AssetEntity source;
+  final source;
 
   final double stickerWidth;
   final double stickerHeight;
@@ -77,6 +76,7 @@ class _PhotoEditorState extends State<PhotoEditor> {
         minScale: widget.stickerMinScale,
         onTapRemove: onTapRemoveCard,
       ));
+      cards.removeWhere((element) => element == name);
     });
   }
 
