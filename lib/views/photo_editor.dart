@@ -7,6 +7,7 @@ import 'dart:ui';
 import 'package:add_to_gallery/add_to_gallery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:magician_app/utils/cards_icons_icons.dart';
 import 'package:magician_app/utils/constants.dart';
 import 'package:magician_app/utils/magician_icons_icons.dart';
@@ -244,7 +245,7 @@ class _PhotoEditorState extends State<PhotoEditor> {
                               ),
                               const Spacer(),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Column(
                                     children: [
@@ -256,35 +257,30 @@ class _PhotoEditorState extends State<PhotoEditor> {
 
                                           Navigator.pop(context);
                                         },
-                                        child: Container(
+                                        child: SvgPicture.asset(
+                                          'assets/images/CardSelector.svg',
                                           width: kWidth(context) * .15,
                                           height: kHeight(context) * .1,
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(3),
-                                            border: Border.all(
-                                              color: mainGrayColor,
-                                              width: 1,
-                                            ),
-                                          ),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: const [
-                                              Text(
-                                                "A",
-                                                style: TextStyle(fontSize: 26, color: mainGrayColor, fontWeight: FontWeight.bold),
-                                              ),
-                                              Icon(
-                                                CardsIcons.carreau,
-                                                color: mainGrayColor,
-                                                // size: 16,
-                                              ),
-                                            ],
-                                          ),
+                                          color: Colors.white,
                                         ),
                                       ),
                                       const SizedBox(height: 5),
                                       const Text(
                                         "Get Random Cards",
+                                        style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                                      )
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      SvgPicture.asset(
+                                        'assets/images/Ghost.svg',
+                                        width: kWidth(context) * .15,
+                                        height: kHeight(context) * .1,
+                                      ),
+                                      const SizedBox(height: 5),
+                                      const Text(
+                                        "Ghost",
                                         style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                                       )
                                     ],
@@ -297,30 +293,11 @@ class _PhotoEditorState extends State<PhotoEditor> {
                         ),
                       );
                     },
-                    child: Container(
+                    child: SvgPicture.asset(
+                      'assets/images/CardSelector.svg',
                       width: kWidth(context) * .06,
                       height: kHeight(context) * .04,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(3),
-                        border: Border.all(
-                          color: mainGrayColor,
-                          width: 1,
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Text(
-                            "A",
-                            style: TextStyle(color: mainGrayColor, fontWeight: FontWeight.bold),
-                          ),
-                          Icon(
-                            CardsIcons.carreau,
-                            color: mainGrayColor,
-                            size: 8,
-                          ),
-                        ],
-                      ),
+                      color: Colors.white,
                     ),
                   ),
                 ),
