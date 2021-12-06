@@ -27,11 +27,24 @@ class MyApp extends StatelessWidget {
     context.read<DataManager>().getCardProps();
     return MaterialApp(
       title: 'Magician Demo',
+      builder: (context, child) {
+        return ScrollConfiguration(
+          behavior: MyBehavior(),
+          child: child!,
+        );
+      },
       theme: ThemeData(
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: backgroundColor,
       ),
       home: const RootPage(),
     );
+  }
+}
+
+class MyBehavior extends ScrollBehavior {
+  @override
+  Widget buildViewportChrome(BuildContext context, Widget child, AxisDirection axisDirection) {
+    return child;
   }
 }

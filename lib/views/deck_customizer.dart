@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:magician_app/provider/data_manager.dart';
-import 'package:magician_app/utils/cards_icons_icons.dart';
+import 'package:magician_app/utils/cards_icons.dart';
 import 'package:magician_app/utils/constants.dart';
 import 'package:magician_app/widgets/color_dropdown.dart';
 import 'package:magician_app/widgets/custom_drop_down.dart';

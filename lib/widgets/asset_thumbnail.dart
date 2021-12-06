@@ -29,7 +29,7 @@ class AssetThumbnail extends StatelessWidget {
         return GestureDetector(
           onTap: () {
             context.read<DataManager>().setWorkingImage(asset);
-            Navigator.of(context).push(MaterialPageRoute(builder: (_) => PhotoEditor(asset)));
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => PhotoEditor(source: asset)));
           },
           child: Container(
             margin: const EdgeInsets.all(5),

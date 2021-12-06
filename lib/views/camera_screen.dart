@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:magician_app/provider/data_manager.dart';
 import 'package:magician_app/utils/constants.dart';
 import 'package:magician_app/utils/magician_icons_icons.dart';
+import 'package:magician_app/views/photo_editor.dart';
 import 'package:provider/provider.dart';
 import 'package:blur/blur.dart';
 
@@ -33,12 +34,18 @@ class _CameraScreenState extends State<CameraScreen> {
     final image = await controller.takePicture();
 
     final path = image.path;
-
-    await AddToGallery.addToGallery(
-      originalFile: File(path),
-      albumName: 'Camera',
-      deleteOriginalFile: true,
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => PhotoEditor(
+          source: path,
+        ),
+      ),
     );
+    // await AddToGallery.addToGallery(
+    //   originalFile: File(path),
+    //   albumName: 'Camera',
+    //   deleteOriginalFile: true,
+    // );
     context.read<DataManager>().getImage();
     // var img = context.watch<DataManager>().image;
     // Navigator.of(context).push(MaterialPageRoute(builder: (_) => EditorScreen(image: img!, size: img.size)));

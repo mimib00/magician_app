@@ -8,17 +8,19 @@ import 'package:add_to_gallery/add_to_gallery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:magician_app/utils/cards_icons_icons.dart';
+
 import 'package:magician_app/utils/constants.dart';
 import 'package:magician_app/utils/magician_icons_icons.dart';
+import 'package:magician_app/views/save_screen.dart';
 import 'package:magician_app/widgets/custom_button.dart';
 import 'package:magician_app/widgets/playing_card.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:photo_manager/photo_manager.dart';
 import 'package:screenshot/screenshot.dart';
 
 class PhotoEditor extends StatefulWidget {
-  const PhotoEditor(
-    this.source, {
+  const PhotoEditor({
+    this.source,
     Key? key,
     this.stickerWidth = 80.0,
     this.stickerHeight = 110.0,
@@ -104,26 +106,19 @@ class _PhotoEditorState extends State<PhotoEditor> {
   Future<String> getFilePath() async {
     Directory tempDir = await getTemporaryDirectory();
     String tempPath = tempDir.path;
-    var filePath = "$tempPath/tempImage.jpg";
+    var filePath = "$tempPath/tempImage${Random.secure().nextInt(10000000)}.jpg";
 
     return filePath;
   }
 
-  void saveImageToGallery() {
-    _screenshotController.capture().then((Uint8List? image) async {
-      var filePath = await getFilePath();
+  void saveImageTemp() async {
+    Uint8List? image = await _screenshotController.capture();
+    var filePath = await getFilePath();
 
-      File file = File(filePath);
-      file.writeAsBytesSync(image!); // Saves the image in the temp folder
+    File file = File(filePath);
+    file.writeAsBytesSync(image!); // Saves the image in the temp folder
 
-      /// Moves the image to the app gallery album and delete the image from the temp folder.
-      /// to avoid duplication of images and save space.
-      await AddToGallery.addToGallery(
-        originalFile: File(filePath),
-        albumName: 'Magician App',
-        deleteOriginalFile: true,
-      );
-    });
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => SaveScreen(file: file)));
   }
 
   @override
@@ -131,180 +126,344 @@ class _PhotoEditorState extends State<PhotoEditor> {
     return SafeArea(
       child: Scaffold(
         key: scaffoldState,
-        body: FutureBuilder<File?>(
-          future: widget.source.file,
-          builder: (_, snapshot) {
-            final file = snapshot.data;
+        body: widget.source.runtimeType == AssetEntity
+            ? FutureBuilder<File?>(
+                future: widget.source.file,
+                builder: (_, snapshot) {
+                  final file = snapshot.data;
 
-            // If we have no data, display a spinner
-            if (file == null) return const Center(child: CircularProgressIndicator(color: primaryColor));
-            // If there's data, display it as an image
+                  // If we have no data, display a spinner
+                  if (file == null) return const Center(child: CircularProgressIndicator(color: primaryColor));
+                  // If there's data, display it as an image
 
-            return Stack(
-              children: [
-                Column(
-                  children: [
-                    Expanded(
-                      child: RepaintBoundary(
-                        key: key,
-                        child: Screenshot(
-                          controller: _screenshotController,
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              LayoutBuilder(
-                                builder: (BuildContext context, BoxConstraints constraints) {
-                                  viewport = viewport ?? Size(constraints.maxWidth, constraints.maxHeight);
-                                  return Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Image.file(
-                                      file,
-                                      fit: BoxFit.fitWidth,
-                                    ),
-                                  );
-                                },
+                  return Stack(
+                    children: [
+                      Column(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: RepaintBoundary(
+                                key: key,
+                                child: Screenshot(
+                                  controller: _screenshotController,
+                                  child: Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      LayoutBuilder(
+                                        builder: (BuildContext context, BoxConstraints constraints) {
+                                          viewport = viewport ?? Size(constraints.maxWidth, constraints.maxHeight);
+                                          return Image.file(
+                                            file,
+                                            fit: BoxFit.fitWidth,
+                                          );
+                                        },
+                                      ),
+                                      Stack(children: attachedList, fit: StackFit.expand),
+                                    ],
+                                  ),
+                                ),
                               ),
-                              Stack(children: attachedList, fit: StackFit.expand),
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: cards
+                                .map(
+                                  (e) => GestureDetector(
+                                    onTap: () {
+                                      attachSticker(e);
+                                    },
+                                    child: StaticPlayingCard(e),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              CustomIconButton(
+                                onTap: () {},
+                                icon: const Icon(
+                                  MagicianIcons.share,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              CustomIconButton(
+                                onTap: () {
+                                  saveImageTemp();
+                                },
+                                backgroundColor: primaryColor,
+                                icon: const Icon(
+                                  MagicianIcons.save,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              CustomIconButton(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                backgroundColor: Colors.red[400]!,
+                                icon: const Icon(
+                                  Icons.close,
+                                  color: Colors.black,
+                                ),
+                              ),
                             ],
+                          ),
+                        ],
+                      ),
+                      Positioned(
+                        top: 15,
+                        left: 15,
+                        child: GestureDetector(
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              backgroundColor: Colors.transparent,
+                              isDismissible: true,
+                              builder: (context) => Container(
+                                padding: const EdgeInsets.all(5),
+                                height: kHeight(context) * .25,
+                                decoration: const BoxDecoration(
+                                  color: backgroundColor,
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    topRight: Radius.circular(20),
+                                  ),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      "Select Items",
+                                      style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                                    ),
+                                    const Spacer(),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Column(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  getRandomCards();
+                                                });
+
+                                                Navigator.pop(context);
+                                              },
+                                              child: SvgPicture.asset(
+                                                'assets/images/CardSelector.svg',
+                                                width: kWidth(context) * .15,
+                                                height: kHeight(context) * .1,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 5),
+                                            const Text(
+                                              "Get Random Cards",
+                                              style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                                            )
+                                          ],
+                                        ),
+                                        Column(
+                                          children: [
+                                            SvgPicture.asset(
+                                              'assets/images/Ghost.svg',
+                                              width: kWidth(context) * .15,
+                                              height: kHeight(context) * .1,
+                                            ),
+                                            const SizedBox(height: 5),
+                                            const Text(
+                                              "Ghost",
+                                              style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    const Spacer(),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                          child: SvgPicture.asset(
+                            'assets/images/CardSelector.svg',
+                            width: kWidth(context) * .06,
+                            height: kHeight(context) * .04,
+                            color: Colors.white,
                           ),
                         ),
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: cards
-                          .map(
-                            (e) => GestureDetector(
-                              onTap: () {
-                                attachSticker(e);
-                              },
-                              child: StaticPlayingCard(e),
-                            ),
-                          )
-                          .toList(),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CustomIconButton(
-                          onTap: () {},
-                          icon: const Icon(
-                            MagicianIcons.share,
-                            color: Colors.black,
-                          ),
-                        ),
-                        CustomIconButton(
-                          onTap: () {
-                            saveImageToGallery();
-                          },
-                          backgroundColor: primaryColor,
-                          icon: const Icon(
-                            MagicianIcons.save,
-                            color: Colors.black,
-                          ),
-                        ),
-                        CustomIconButton(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          backgroundColor: Colors.red[400]!,
-                          icon: const Icon(
-                            Icons.close,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Positioned(
-                  top: 15,
-                  left: 15,
-                  child: GestureDetector(
-                    onTap: () {
-                      showModalBottomSheet(
-                        context: context,
-                        backgroundColor: Colors.transparent,
-                        isDismissible: true,
-                        builder: (context) => Container(
-                          padding: const EdgeInsets.all(5),
-                          height: kHeight(context) * .25,
-                          decoration: const BoxDecoration(
-                            color: backgroundColor,
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              topRight: Radius.circular(20),
+                    ],
+                  );
+                },
+              )
+            : Stack(
+                children: [
+                  Column(
+                    children: [
+                      Expanded(
+                        child: RepaintBoundary(
+                          key: key,
+                          child: Screenshot(
+                            controller: _screenshotController,
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                LayoutBuilder(
+                                  builder: (BuildContext context, BoxConstraints constraints) {
+                                    viewport = viewport ?? Size(constraints.maxWidth, constraints.maxHeight);
+                                    return Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: Image.file(
+                                        File(widget.source),
+                                        fit: BoxFit.fitWidth,
+                                      ),
+                                    );
+                                  },
+                                ),
+                                Stack(children: attachedList, fit: StackFit.expand),
+                              ],
                             ),
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "Select Items",
-                                style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: cards
+                            .map(
+                              (e) => GestureDetector(
+                                onTap: () {
+                                  attachSticker(e);
+                                },
+                                child: StaticPlayingCard(e),
                               ),
-                              const Spacer(),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Column(
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            getRandomCards();
-                                          });
+                            )
+                            .toList(),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          CustomIconButton(
+                            onTap: () {},
+                            icon: const Icon(
+                              MagicianIcons.share,
+                              color: Colors.black,
+                            ),
+                          ),
+                          CustomIconButton(
+                            onTap: () {
+                              saveImageTemp();
+                            },
+                            backgroundColor: primaryColor,
+                            icon: const Icon(
+                              MagicianIcons.save,
+                              color: Colors.black,
+                            ),
+                          ),
+                          CustomIconButton(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            backgroundColor: Colors.red[400]!,
+                            icon: const Icon(
+                              Icons.close,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Positioned(
+                    top: 15,
+                    left: 15,
+                    child: GestureDetector(
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          backgroundColor: Colors.transparent,
+                          isDismissible: true,
+                          builder: (context) => Container(
+                            padding: const EdgeInsets.all(5),
+                            height: kHeight(context) * .25,
+                            decoration: const BoxDecoration(
+                              color: backgroundColor,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20),
+                              ),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  "Select Items",
+                                  style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                                ),
+                                const Spacer(),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Column(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              getRandomCards();
+                                            });
 
-                                          Navigator.pop(context);
-                                        },
-                                        child: SvgPicture.asset(
-                                          'assets/images/CardSelector.svg',
+                                            Navigator.pop(context);
+                                          },
+                                          child: SvgPicture.asset(
+                                            'assets/images/CardSelector.svg',
+                                            width: kWidth(context) * .15,
+                                            height: kHeight(context) * .1,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 5),
+                                        const Text(
+                                          "Get Random Cards",
+                                          style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                                        )
+                                      ],
+                                    ),
+                                    Column(
+                                      children: [
+                                        SvgPicture.asset(
+                                          'assets/images/Ghost.svg',
                                           width: kWidth(context) * .15,
                                           height: kHeight(context) * .1,
-                                          color: Colors.white,
                                         ),
-                                      ),
-                                      const SizedBox(height: 5),
-                                      const Text(
-                                        "Get Random Cards",
-                                        style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
-                                      )
-                                    ],
-                                  ),
-                                  Column(
-                                    children: [
-                                      SvgPicture.asset(
-                                        'assets/images/Ghost.svg',
-                                        width: kWidth(context) * .15,
-                                        height: kHeight(context) * .1,
-                                      ),
-                                      const SizedBox(height: 5),
-                                      const Text(
-                                        "Ghost",
-                                        style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
-                                      )
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              const Spacer(),
-                            ],
+                                        const SizedBox(height: 5),
+                                        const Text(
+                                          "Ghost",
+                                          style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const Spacer(),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    child: SvgPicture.asset(
-                      'assets/images/CardSelector.svg',
-                      width: kWidth(context) * .06,
-                      height: kHeight(context) * .04,
-                      color: Colors.white,
+                        );
+                      },
+                      child: SvgPicture.asset(
+                        'assets/images/CardSelector.svg',
+                        width: kWidth(context) * .06,
+                        height: kHeight(context) * .04,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            );
-          },
-        ),
+                ],
+              ),
       ),
     );
   }
