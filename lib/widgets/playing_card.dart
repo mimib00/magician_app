@@ -47,10 +47,10 @@ class _PlayingCardState extends State<PlayingCard> {
 
   Offset _previousOffset = Offset.zero;
   Offset _startingFocalPoint = Offset.zero;
-  Offset _offset = Offset.zero;
 
   double _rotation = 0.0;
   double _previousRotation = 0.0;
+  Offset _offset = Offset.zero;
 
   bool _isSelected = false;
   var symbol = '';
@@ -102,6 +102,7 @@ class _PlayingCardState extends State<PlayingCard> {
   @override
   Widget build(BuildContext context) {
     _getCardInfo();
+    // var pos = Offset(kWidth(context) / 2, kHeight(context) / 2);
     // print("H:${widget.height}, W:${widget.width}");
     return Positioned.fromRect(
       rect: Rect.fromPoints(Offset(_offset.dx, _offset.dy), Offset(_offset.dx + widget.width!, _offset.dy + widget.height!)),

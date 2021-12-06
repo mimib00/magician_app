@@ -7,6 +7,7 @@ import 'dart:ui';
 import 'package:add_to_gallery/add_to_gallery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:magician_app/utils/cards_icons_icons.dart';
 import 'package:magician_app/utils/constants.dart';
 import 'package:magician_app/utils/magician_icons_icons.dart';
 import 'package:magician_app/widgets/custom_button.dart';
@@ -57,10 +58,11 @@ class _PhotoEditorState extends State<PhotoEditor> {
   List<PlayingCard> attachedList = [];
 
   final GlobalKey key = GlobalKey();
+  final GlobalKey<ScaffoldState> scaffoldState = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
-    getRandomCard();
+    getRandomCards();
     super.initState();
   }
 
@@ -76,11 +78,18 @@ class _PhotoEditorState extends State<PhotoEditor> {
         minScale: widget.stickerMinScale,
         onTapRemove: onTapRemoveCard,
       ));
-      cards.removeWhere((element) => element == name);
+      removeCrads(name);
     });
   }
 
-  getRandomCard() {
+  removeCrads(String name) {
+    setState(() {
+      cards.removeWhere((element) => element == name);
+    });
+    // if (cards.isEmpty) getRandomCards();
+  }
+
+  getRandomCards() {
     cards.clear();
     for (var i = 0; i < 5; i++) {
       var cardnumber = random.nextInt(52);
@@ -120,6 +129,7 @@ class _PhotoEditorState extends State<PhotoEditor> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        key: scaffoldState,
         body: FutureBuilder<File?>(
           future: widget.source.file,
           builder: (_, snapshot) {
@@ -129,78 +139,190 @@ class _PhotoEditorState extends State<PhotoEditor> {
             if (file == null) return const Center(child: CircularProgressIndicator(color: primaryColor));
             // If there's data, display it as an image
 
-            return Column(
+            return Stack(
               children: [
-                Expanded(
-                  child: RepaintBoundary(
-                    key: key,
-                    child: Screenshot(
-                      controller: _screenshotController,
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          LayoutBuilder(
-                            builder: (BuildContext context, BoxConstraints constraints) {
-                              viewport = viewport ?? Size(constraints.maxWidth, constraints.maxHeight);
-                              return Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: Image.file(
-                                  file,
-                                  fit: BoxFit.fitWidth,
-                                ),
-                              );
-                            },
+                Column(
+                  children: [
+                    Expanded(
+                      child: RepaintBoundary(
+                        key: key,
+                        child: Screenshot(
+                          controller: _screenshotController,
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              LayoutBuilder(
+                                builder: (BuildContext context, BoxConstraints constraints) {
+                                  viewport = viewport ?? Size(constraints.maxWidth, constraints.maxHeight);
+                                  return Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Image.file(
+                                      file,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  );
+                                },
+                              ),
+                              Stack(children: attachedList, fit: StackFit.expand),
+                            ],
                           ),
-                          Stack(children: attachedList, fit: StackFit.expand),
+                        ),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: cards
+                          .map(
+                            (e) => GestureDetector(
+                              onTap: () {
+                                attachSticker(e);
+                              },
+                              child: StaticPlayingCard(e),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        CustomIconButton(
+                          onTap: () {},
+                          icon: const Icon(
+                            MagicianIcons.share,
+                            color: Colors.black,
+                          ),
+                        ),
+                        CustomIconButton(
+                          onTap: () {
+                            saveImageToGallery();
+                          },
+                          backgroundColor: primaryColor,
+                          icon: const Icon(
+                            MagicianIcons.save,
+                            color: Colors.black,
+                          ),
+                        ),
+                        CustomIconButton(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          backgroundColor: Colors.red[400]!,
+                          icon: const Icon(
+                            Icons.close,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Positioned(
+                  top: 15,
+                  left: 15,
+                  child: GestureDetector(
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        backgroundColor: Colors.transparent,
+                        isDismissible: true,
+                        builder: (context) => Container(
+                          padding: const EdgeInsets.all(5),
+                          height: kHeight(context) * .25,
+                          decoration: const BoxDecoration(
+                            color: backgroundColor,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "Select Items",
+                                style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                              ),
+                              const Spacer(),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Column(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            getRandomCards();
+                                          });
+
+                                          Navigator.pop(context);
+                                        },
+                                        child: Container(
+                                          width: kWidth(context) * .15,
+                                          height: kHeight(context) * .1,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(3),
+                                            border: Border.all(
+                                              color: mainGrayColor,
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: const [
+                                              Text(
+                                                "A",
+                                                style: TextStyle(fontSize: 26, color: mainGrayColor, fontWeight: FontWeight.bold),
+                                              ),
+                                              Icon(
+                                                CardsIcons.carreau,
+                                                color: mainGrayColor,
+                                                // size: 16,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 5),
+                                      const Text(
+                                        "Get Random Cards",
+                                        style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              const Spacer(),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: kWidth(context) * .06,
+                      height: kHeight(context) * .04,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(3),
+                        border: Border.all(
+                          color: mainGrayColor,
+                          width: 1,
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Text(
+                            "A",
+                            style: TextStyle(color: mainGrayColor, fontWeight: FontWeight.bold),
+                          ),
+                          Icon(
+                            CardsIcons.carreau,
+                            color: mainGrayColor,
+                            size: 8,
+                          ),
                         ],
                       ),
                     ),
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: cards
-                      .map(
-                        (e) => GestureDetector(
-                          onTap: () {
-                            attachSticker(e);
-                          },
-                          child: StaticPlayingCard(e),
-                        ),
-                      )
-                      .toList(),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    CustomIconButton(
-                      onTap: () {},
-                      icon: const Icon(
-                        MagicianIcons.share,
-                        color: Colors.black,
-                      ),
-                    ),
-                    CustomIconButton(
-                      onTap: () {
-                        saveImageToGallery();
-                      },
-                      backgroundColor: primaryColor,
-                      icon: const Icon(
-                        MagicianIcons.save,
-                        color: Colors.black,
-                      ),
-                    ),
-                    CustomIconButton(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      backgroundColor: Colors.red[400]!,
-                      icon: const Icon(
-                        Icons.close,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
                 ),
               ],
             );
