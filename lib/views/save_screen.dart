@@ -8,19 +8,30 @@ import 'package:magician_app/utils/constants.dart';
 import 'package:magician_app/utils/magician_icons_icons.dart';
 import 'package:magician_app/widgets/custom_button.dart';
 import 'package:path/path.dart' as path;
+import 'package:share_plus/share_plus.dart';
 
-class SaveScreen extends StatelessWidget {
+class SaveScreen extends StatefulWidget {
   final File file;
-  SaveScreen({Key? key, required this.file}) : super(key: key);
+  const SaveScreen({Key? key, required this.file}) : super(key: key);
 
+  @override
+  State<SaveScreen> createState() => _SaveScreenState();
+}
+
+class _SaveScreenState extends State<SaveScreen> {
   final TextEditingController _name = TextEditingController();
 
+  bool isLoading = false;
+
   void saveImageToGallery() async {
+    setState(() {
+      isLoading = true;
+    });
     if (_name.text.isNotEmpty) {
       /// Moves the image to the app gallery album and delete the image from the temp folder.
       /// to avoid duplication of images and save space.
       var newFile = await AddToGallery.addToGallery(
-        originalFile: file,
+        originalFile: widget.file,
         albumName: 'Magician App',
         deleteOriginalFile: true,
       );
@@ -30,11 +41,14 @@ class SaveScreen extends StatelessWidget {
       newFile.renameSync(newPath);
     } else {
       await AddToGallery.addToGallery(
-        originalFile: file,
+        originalFile: widget.file,
         albumName: 'Magician App',
         deleteOriginalFile: true,
       );
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -45,59 +59,85 @@ class SaveScreen extends StatelessWidget {
           FocusScope.of(context).unfocus();
         },
         child: Scaffold(
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                Image.file(file),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: TextField(
-                    controller: _name,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: const InputDecoration(
-                      label: Text('Add Title'),
-                      labelStyle: TextStyle(color: Colors.white),
-                      enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          body: Stack(
+            children: [
+              SingleChildScrollView(
+                child: Column(
                   children: [
-                    CustomIconButton(
-                      onTap: () {},
-                      icon: const Icon(
-                        MagicianIcons.share,
-                        color: Colors.black,
+                    Image.file(widget.file),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: TextField(
+                        controller: _name,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: const InputDecoration(
+                          label: Text('Add Title'),
+                          labelStyle: TextStyle(color: Colors.white),
+                          enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                        ),
                       ),
                     ),
-                    CustomIconButton(
-                      onTap: () {
-                        saveImageToGallery();
-                      },
-                      backgroundColor: primaryColor,
-                      icon: const Icon(
-                        MagicianIcons.save,
-                        color: Colors.black,
-                      ),
-                    ),
-                    CustomIconButton(
-                      onTap: () {
-                        file.deleteSync();
-                        Navigator.pop(context);
-                      },
-                      backgroundColor: Colors.red[400]!,
-                      icon: const Icon(
-                        MagicianIcons.delete,
-                        color: Colors.black,
-                      ),
+                    const SizedBox(height: 30),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        CustomIconButton(
+                          onTap: () async {
+                            Share.shareFiles(
+                              [
+                                widget.file.path
+                              ],
+                            );
+                          },
+                          icon: const Icon(
+                            MagicianIcons.share,
+                            color: Colors.black,
+                          ),
+                        ),
+                        CustomIconButton(
+                          onTap: () {
+                            saveImageToGallery();
+                          },
+                          backgroundColor: primaryColor,
+                          icon: const Icon(
+                            MagicianIcons.save,
+                            color: Colors.black,
+                          ),
+                        ),
+                        CustomIconButton(
+                          onTap: () {
+                            widget.file.deleteSync();
+                            Navigator.pop(context);
+                          },
+                          backgroundColor: Colors.red[400]!,
+                          icon: const Icon(
+                            MagicianIcons.delete,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              isLoading
+                  ? Align(
+                      alignment: Alignment.center,
+                      child: AlertDialog(
+                        content: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: const [
+                            Text("Loading.."),
+                            CircularProgressIndicator(
+                              color: primaryColor,
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ],
           ),
         ),
       ),

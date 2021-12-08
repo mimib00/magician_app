@@ -36,17 +36,11 @@ class DataManager extends ChangeNotifier {
 
   double _scale = 0;
 
-  int _currentPage = 0;
-  int _pageSize = 100;
-
   List<Widget> get items => _items;
   List<CameraDescription> get cameras => _cameras;
   CameraController get controller => _controller;
 
   double get scale => _scale;
-
-  set setCurrentPage(int page) => _currentPage = page;
-  set setPageSize(int size) => _pageSize = size;
 
   setWorkingImage(AssetEntity image) {
     workingImage = image;
@@ -86,39 +80,7 @@ class DataManager extends ChangeNotifier {
     if (_scale < 1) _scale = 1 / _scale;
   }
 
-  void _init() async {
-    final result = await PhotoManager.requestPermissionExtend();
-    hasPermission = result.isAuth;
-  }
-
   setAvailableCameras(List<CameraDescription> cameras) => _cameras = cameras;
-
-  void getImages() async {
-    _init();
-    final albums = await PhotoManager.getAssetPathList(type: RequestType.image, onlyAll: true);
-    final recentAlbum = albums.first;
-
-    final recentAssets = await recentAlbum.getAssetListPaged(_currentPage, _pageSize);
-    images = recentAssets;
-    notifyListeners();
-  }
-
-  void getImage() async {
-    final albums = await PhotoManager.getAssetPathList(
-      type: RequestType.image,
-      filterOption: FilterOptionGroup(
-        orders: [
-          const OrderOption(type: OrderOptionType.createDate, asc: true),
-        ],
-      ),
-    );
-
-    final album = albums.where((AssetPathEntity element) => element.name == "Magician App").toList().first;
-    final lastAsset = await album.getAssetListPaged(0, album.assetCount);
-    lastAsset.sort((a, b) => a.createDateTime.compareTo(b.createDateTime));
-    image = lastAsset.last;
-    notifyListeners();
-  }
 
   /// Initilize card props if they are null.
   void initCardProps() async {

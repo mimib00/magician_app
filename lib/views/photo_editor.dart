@@ -17,6 +17,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:screenshot/screenshot.dart';
 
+import 'package:share_plus/share_plus.dart';
+
 class PhotoEditor extends StatefulWidget {
   const PhotoEditor({
     this.source,
@@ -62,6 +64,8 @@ class _PhotoEditorState extends State<PhotoEditor> {
   final GlobalKey key = GlobalKey();
   final GlobalKey<ScaffoldState> scaffoldState = GlobalKey<ScaffoldState>();
 
+  bool isLoading = false;
+
   @override
   void initState() {
     getRandomCards();
@@ -104,19 +108,25 @@ class _PhotoEditorState extends State<PhotoEditor> {
   Future<String> getFilePath() async {
     Directory tempDir = await getTemporaryDirectory();
     String tempPath = tempDir.path;
-    var filePath = "$tempPath/tempImage${Random.secure().nextInt(10000000)}.jpg";
+    var filePath = "$tempPath/${DateTime.now().millisecondsSinceEpoch}.jpg";
 
     return filePath;
   }
 
-  void saveImageTemp() async {
+  Future<File> saveImageTemp() async {
+    setState(() {
+      isLoading = true;
+    });
+
     Uint8List? image = await _screenshotController.capture();
     var filePath = await getFilePath();
 
     File file = File(filePath);
     file.writeAsBytesSync(image!); // Saves the image in the temp folder
-
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => SaveScreen(file: file)));
+    setState(() {
+      isLoading = false;
+    });
+    return file;
   }
 
   @override
@@ -181,15 +191,23 @@ class _PhotoEditorState extends State<PhotoEditor> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               CustomIconButton(
-                                onTap: () {},
+                                onTap: () async {
+                                  final file = await saveImageTemp();
+                                  Share.shareFiles(
+                                    [
+                                      file.path
+                                    ],
+                                  );
+                                },
                                 icon: const Icon(
                                   MagicianIcons.share,
                                   color: Colors.black,
                                 ),
                               ),
                               CustomIconButton(
-                                onTap: () {
-                                  saveImageTemp();
+                                onTap: () async {
+                                  final file = await saveImageTemp();
+                                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => SaveScreen(file: file)));
                                 },
                                 backgroundColor: primaryColor,
                                 icon: const Icon(
@@ -315,6 +333,19 @@ class _PhotoEditorState extends State<PhotoEditor> {
                           ),
                         ),
                       ),
+                      isLoading
+                          ? AlertDialog(
+                              content: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: const [
+                                  Text("Loading.."),
+                                  CircularProgressIndicator(
+                                    color: primaryColor,
+                                  ),
+                                ],
+                              ),
+                            )
+                          : const SizedBox.shrink(),
                     ],
                   );
                 },
@@ -366,15 +397,23 @@ class _PhotoEditorState extends State<PhotoEditor> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           CustomIconButton(
-                            onTap: () {},
+                            onTap: () async {
+                              final file = await saveImageTemp();
+                              Share.shareFiles(
+                                [
+                                  file.path
+                                ],
+                              );
+                            },
                             icon: const Icon(
                               MagicianIcons.share,
                               color: Colors.black,
                             ),
                           ),
                           CustomIconButton(
-                            onTap: () {
-                              saveImageTemp();
+                            onTap: () async {
+                              final file = await saveImageTemp();
+                              Navigator.of(context).push(MaterialPageRoute(builder: (_) => SaveScreen(file: file)));
                             },
                             backgroundColor: primaryColor,
                             icon: const Icon(
@@ -452,10 +491,30 @@ class _PhotoEditorState extends State<PhotoEditor> {
                                     ),
                                     Column(
                                       children: [
-                                        SvgPicture.asset(
-                                          'assets/images/Ghost.svg',
-                                          width: kWidth(context) * .15,
-                                          height: kHeight(context) * .1,
+                                        GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              attachedList.add(GhostSticker(
+                                                SvgPicture.asset(
+                                                  'assets/images/Ghost.svg',
+                                                  width: kWidth(context) * .15,
+                                                  height: kHeight(context) * .1,
+                                                ),
+                                                key: Key("sticker_${attachedList.length}"),
+                                                width: widget.stickerWidth,
+                                                height: widget.stickerHeight,
+                                                viewport: viewport,
+                                                maxScale: widget.stickerMaxScale,
+                                                minScale: widget.stickerMinScale,
+                                                onTapRemove: onTapRemoveCard,
+                                              ));
+                                            });
+                                          },
+                                          child: SvgPicture.asset(
+                                            'assets/images/Ghost.svg',
+                                            width: kWidth(context) * .15,
+                                            height: kHeight(context) * .1,
+                                          ),
                                         ),
                                         const SizedBox(height: 5),
                                         const Text(
@@ -480,6 +539,19 @@ class _PhotoEditorState extends State<PhotoEditor> {
                       ),
                     ),
                   ),
+                  isLoading
+                      ? AlertDialog(
+                          content: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Text("Loading.."),
+                              CircularProgressIndicator(
+                                color: primaryColor,
+                              ),
+                            ],
+                          ),
+                        )
+                      : const SizedBox.shrink(),
                 ],
               ),
       ),

@@ -39,14 +39,6 @@ class _CameraScreenState extends State<CameraScreen> {
         ),
       ),
     );
-    // await AddToGallery.addToGallery(
-    //   originalFile: File(path),
-    //   albumName: 'Camera',
-    //   deleteOriginalFile: true,
-    // );
-    context.read<DataManager>().getImage();
-    // var img = context.watch<DataManager>().image;
-    // Navigator.of(context).push(MaterialPageRoute(builder: (_) => EditorScreen(image: img!, size: img.size)));
   }
 
   @override
