@@ -4,7 +4,6 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:add_to_gallery/add_to_gallery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -33,7 +32,7 @@ class PhotoEditor extends StatefulWidget {
     this.panelStickerAspectRatio = 1.0,
     this.devicePixelRatio = 3.0,
   }) : super(key: key);
-  final source;
+  final dynamic source;
 
   final double stickerWidth;
   final double stickerHeight;
@@ -58,7 +57,7 @@ class _PhotoEditorState extends State<PhotoEditor> {
 
   List<String> cards = [];
 
-  List<PlayingCard> attachedList = [];
+  List<Widget> attachedList = [];
 
   final GlobalKey key = GlobalKey();
   final GlobalKey<ScaffoldState> scaffoldState = GlobalKey<ScaffoldState>();
@@ -89,7 +88,6 @@ class _PhotoEditorState extends State<PhotoEditor> {
     setState(() {
       cards.removeWhere((element) => element == name);
     });
-    // if (cards.isEmpty) getRandomCards();
   }
 
   getRandomCards() {
@@ -269,10 +267,30 @@ class _PhotoEditorState extends State<PhotoEditor> {
                                         ),
                                         Column(
                                           children: [
-                                            SvgPicture.asset(
-                                              'assets/images/Ghost.svg',
-                                              width: kWidth(context) * .15,
-                                              height: kHeight(context) * .1,
+                                            GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  attachedList.add(GhostSticker(
+                                                    SvgPicture.asset(
+                                                      'assets/images/Ghost.svg',
+                                                      width: kWidth(context) * .15,
+                                                      height: kHeight(context) * .1,
+                                                    ),
+                                                    key: Key("sticker_${attachedList.length}"),
+                                                    width: widget.stickerWidth,
+                                                    height: widget.stickerHeight,
+                                                    viewport: viewport,
+                                                    maxScale: widget.stickerMaxScale,
+                                                    minScale: widget.stickerMinScale,
+                                                    onTapRemove: onTapRemoveCard,
+                                                  ));
+                                                });
+                                              },
+                                              child: SvgPicture.asset(
+                                                'assets/images/Ghost.svg',
+                                                width: kWidth(context) * .15,
+                                                height: kHeight(context) * .1,
+                                              ),
                                             ),
                                             const SizedBox(height: 5),
                                             const Text(
@@ -468,7 +486,7 @@ class _PhotoEditorState extends State<PhotoEditor> {
     );
   }
 
-  void onTapRemoveCard(PlayingCard card) {
+  void onTapRemoveCard(Widget card) {
     setState(() {
       attachedList.removeWhere((s) => s.key == card.key);
     });

@@ -13,7 +13,7 @@ class SaveScreen extends StatelessWidget {
   final File file;
   SaveScreen({Key? key, required this.file}) : super(key: key);
 
-  TextEditingController _name = TextEditingController();
+  final TextEditingController _name = TextEditingController();
 
   void saveImageToGallery() async {
     if (_name.text.isNotEmpty) {

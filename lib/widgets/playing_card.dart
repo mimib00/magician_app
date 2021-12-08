@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 import 'package:vector_math/vector_math_64.dart' as vector;
 
-typedef CardRemoveCallback = void Function(PlayingCard card);
+typedef CardRemoveCallback = void Function(Widget card);
 
 class PlayingCard extends StatefulWidget {
   const PlayingCard(
@@ -268,5 +268,128 @@ class StaticPlayingCard extends StatelessWidget {
       ),
     );
     return child;
+  }
+}
+
+class GhostSticker extends StatefulWidget {
+  const GhostSticker(
+    this.ghost, {
+    Key? key,
+    this.width = 70,
+    this.height = 100,
+    this.viewport,
+    this.minScale = 1.0,
+    this.maxScale = 2.0,
+    this.onTapRemove,
+  }) : super(key: key);
+
+  final Widget ghost;
+  final double? width;
+  final double? height;
+  final Size? viewport;
+
+  final double minScale;
+  final double maxScale;
+
+  final CardRemoveCallback? onTapRemove;
+
+  @override
+  _GhostStickerState createState() => _GhostStickerState();
+}
+
+class _GhostStickerState extends State<GhostSticker> {
+  double _scale = 1.0;
+  double _previousScale = 1.0;
+
+  Offset _previousOffset = Offset.zero;
+  Offset _startingFocalPoint = Offset.zero;
+
+  double _rotation = 0.0;
+  double _previousRotation = 0.0;
+  Offset _offset = Offset.zero;
+
+  bool _isSelected = false;
+
+  @override
+  void dispose() {
+    super.dispose();
+    _offset = Offset.zero;
+    _scale = 1.0;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned.fromRect(
+      rect: Rect.fromPoints(Offset(_offset.dx, _offset.dy), Offset(_offset.dx + widget.width!, _offset.dy + widget.height!)),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Transform(
+            transform: Matrix4.diagonal3(vector.Vector3(_scale, _scale, _scale)),
+            alignment: FractionalOffset.center,
+            child: GestureDetector(
+              onScaleStart: (ScaleStartDetails details) {
+                _startingFocalPoint = details.focalPoint;
+                _previousOffset = _offset;
+                _previousRotation = _rotation;
+                _previousScale = _scale;
+
+                // print("begin - focal : ${details.focalPoint}, local : ${details.localFocalPoint}");
+              },
+              onScaleUpdate: (ScaleUpdateDetails details) {
+                _scale = min(max(_previousScale * details.scale, widget.minScale), widget.maxScale);
+
+                _rotation = details.rotation;
+
+                final Offset normalizedOffset = (_startingFocalPoint - _previousOffset) / _previousScale;
+
+                Offset __offset = details.focalPoint - (normalizedOffset * _scale);
+
+                __offset = Offset(max(__offset.dx, -widget.width!), max(__offset.dy, -widget.height!));
+
+                __offset = Offset(min(__offset.dx, widget.viewport!.width), min(__offset.dy, widget.viewport!.height));
+
+                setState(() {
+                  _offset = __offset;
+                  // print("move - $_offset, scale : $_scale");
+                });
+              },
+              onTap: () {
+                setState(() {
+                  _isSelected = !_isSelected;
+                });
+              },
+              onTapCancel: () {
+                setState(() {
+                  _isSelected = false;
+                });
+              },
+              onDoubleTap: () {
+                setState(() {
+                  _scale = 1.0;
+                });
+              },
+              child: widget.ghost,
+            ),
+          ),
+          _isSelected
+              ? Container(
+                  alignment: Alignment.center,
+                  child: IconButton(
+                    iconSize: 24,
+                    padding: EdgeInsets.zero,
+                    icon: const Icon(Icons.delete_forever_rounded),
+                    color: Colors.red,
+                    onPressed: () {
+                      if (widget.onTapRemove != null) {
+                        widget.onTapRemove!((widget));
+                      }
+                    },
+                  ),
+                )
+              : Container(),
+        ],
+      ),
+    );
   }
 }

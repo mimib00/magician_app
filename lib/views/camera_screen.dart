@@ -1,7 +1,5 @@
-import 'dart:io';
 import 'dart:ui';
 
-import 'package:add_to_gallery/add_to_gallery.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:magician_app/provider/data_manager.dart';
