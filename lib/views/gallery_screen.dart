@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:magician_app/provider/data_manager.dart';
 import 'package:magician_app/widgets/asset_thumbnail.dart';
-import 'package:provider/provider.dart';
+import 'package:photo_manager/photo_manager.dart';
 
 class GalleryScreen extends StatefulWidget {
   const GalleryScreen({Key? key}) : super(key: key);
@@ -11,10 +10,37 @@ class GalleryScreen extends StatefulWidget {
 }
 
 class _GalleryScreenState extends State<GalleryScreen> {
+  bool hasPermission = false;
+  List<AssetEntity> images = [];
+
   @override
   void initState() {
-    context.read<DataManager>().getImages();
+    _getImages();
     super.initState();
+  }
+
+  void _getImages() async {
+    int _currentPage = 0;
+    int _pageSize = 100;
+
+    final result = await PhotoManager.requestPermissionExtend();
+
+    if (result.isAuth) {
+      final albums = await PhotoManager.getAssetPathList(type: RequestType.image, onlyAll: true);
+      final recentAlbum = albums.first;
+
+      final recentAssets = await recentAlbum.getAssetListPaged(_currentPage, _pageSize);
+
+      setState(() {
+        images = recentAssets;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    images.clear();
+    super.dispose();
   }
 
   @override
@@ -24,10 +50,10 @@ class _GalleryScreenState extends State<GalleryScreen> {
         // A grid view with 3 items per row
         crossAxisCount: 3,
       ),
-      itemCount: context.watch<DataManager>().images.length,
+      itemCount: images.length,
       itemBuilder: (_, index) {
         return AssetThumbnail(
-          asset: context.watch<DataManager>().images[index],
+          asset: images[index],
         );
       },
     );
