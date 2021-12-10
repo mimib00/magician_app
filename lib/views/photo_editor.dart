@@ -23,8 +23,8 @@ class PhotoEditor extends StatefulWidget {
   const PhotoEditor({
     this.source,
     Key? key,
-    this.stickerWidth = 80.0,
-    this.stickerHeight = 110.0,
+    this.stickerWidth = 100.0,
+    this.stickerHeight = 130.0,
     this.stickerMaxScale = 2.0,
     this.stickerMinScale = 0.5,
     this.panelHeight = 200.0,
@@ -288,20 +288,24 @@ class _PhotoEditorState extends State<PhotoEditor> {
                                             GestureDetector(
                                               onTap: () {
                                                 setState(() {
-                                                  attachedList.add(GhostSticker(
-                                                    SvgPicture.asset(
-                                                      'assets/images/Ghost.svg',
-                                                      width: kWidth(context) * .15,
-                                                      height: kHeight(context) * .1,
+                                                  attachedList.add(
+                                                    GhostSticker(
+                                                      Stack(
+                                                        children: [
+                                                          SvgPicture.asset("assets/images/Ghost.svg"),
+                                                          Positioned(
+                                                            child: HandCard(
+                                                              'H-A',
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      key: Key("sticker_${attachedList.length}"),
+                                                      width: widget.stickerWidth,
+                                                      height: widget.stickerHeight,
+                                                      viewport: viewport,
                                                     ),
-                                                    key: Key("sticker_${attachedList.length}"),
-                                                    width: widget.stickerWidth,
-                                                    height: widget.stickerHeight,
-                                                    viewport: viewport,
-                                                    maxScale: widget.stickerMaxScale,
-                                                    minScale: widget.stickerMinScale,
-                                                    onTapRemove: onTapRemoveCard,
-                                                  ));
+                                                  );
                                                 });
                                               },
                                               child: SvgPicture.asset(
@@ -494,20 +498,24 @@ class _PhotoEditorState extends State<PhotoEditor> {
                                         GestureDetector(
                                           onTap: () {
                                             setState(() {
-                                              attachedList.add(GhostSticker(
-                                                SvgPicture.asset(
-                                                  'assets/images/Ghost.svg',
-                                                  width: kWidth(context) * .15,
-                                                  height: kHeight(context) * .1,
+                                              attachedList.add(
+                                                GhostSticker(
+                                                  Stack(
+                                                    children: [
+                                                      SvgPicture.asset("assets/images/Ghost.svg"),
+                                                      Positioned(
+                                                        child: HandCard(
+                                                          'H-A',
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  key: Key("sticker_${attachedList.length}"),
+                                                  width: widget.stickerWidth,
+                                                  height: widget.stickerHeight,
+                                                  viewport: viewport,
                                                 ),
-                                                key: Key("sticker_${attachedList.length}"),
-                                                width: widget.stickerWidth,
-                                                height: widget.stickerHeight,
-                                                viewport: viewport,
-                                                maxScale: widget.stickerMaxScale,
-                                                minScale: widget.stickerMinScale,
-                                                onTapRemove: onTapRemoveCard,
-                                              ));
+                                              );
                                             });
                                           },
                                           child: SvgPicture.asset(
