@@ -3,6 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:magician_app/provider/data_manager.dart';
+import 'package:magician_app/utils/cards_icons.dart';
 import 'package:magician_app/utils/constants.dart';
 import 'package:magician_app/utils/magician_icons_icons.dart';
 import 'package:magician_app/views/photo_editor.dart';
@@ -44,6 +45,50 @@ class _CameraScreenState extends State<CameraScreen> {
     );
   }
 
+  Map<String, dynamic> cardMaker(String cardName) {
+    final type = cardName.split('-');
+    final name = type[1];
+    Icon? _cardTypeIcon;
+    Color? cardColor;
+
+    switch (type[0]) {
+      case "D":
+        _cardTypeIcon = Icon(
+          CardsIcons.carreau,
+          color: context.watch<DataManager>().coeurCarreau,
+        );
+        cardColor = context.watch<DataManager>().coeurCarreau;
+        break;
+      case "H":
+        _cardTypeIcon = Icon(
+          CardsIcons.coeur,
+          color: context.watch<DataManager>().coeurCarreau,
+        );
+        cardColor = context.watch<DataManager>().coeurCarreau;
+        break;
+      case "C":
+        _cardTypeIcon = Icon(
+          CardsIcons.trefle,
+          color: context.watch<DataManager>().treflePique,
+        );
+        cardColor = context.watch<DataManager>().treflePique;
+        break;
+      case "S":
+        _cardTypeIcon = Icon(
+          CardsIcons.pique,
+          color: context.watch<DataManager>().treflePique,
+        );
+        cardColor = context.watch<DataManager>().treflePique;
+        break;
+      default:
+    }
+    return {
+      "name": name,
+      "icon": _cardTypeIcon,
+      "color": cardColor,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     var _controller = context.watch<DataManager>().controller;
@@ -78,7 +123,54 @@ class _CameraScreenState extends State<CameraScreen> {
                         left: 10,
                         child: IconButton(
                           padding: EdgeInsets.zero,
-                          onPressed: () {},
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (_) => AlertDialog(
+                                backgroundColor: backgroundColor,
+                                titleTextStyle: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                ),
+                                title: const Text("Select a card"),
+                                content: SizedBox(
+                                  height: kHeight(context) * .7,
+                                  width: kWidth(context),
+                                  child: GridView.builder(
+                                    itemCount: cardsList.length,
+                                    itemBuilder: (_, index) {
+                                      final data = cardMaker(cardsList[index]);
+                                      return GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            selectedCard = cardsList[index];
+                                          });
+                                          Navigator.pop(context);
+                                        },
+                                        child: Container(
+                                          margin: const EdgeInsets.all(5),
+                                          color: Colors.white,
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                data['name'],
+                                                style: TextStyle(fontSize: 20, color: data['color'], fontWeight: FontWeight.bold),
+                                              ),
+                                              data["icon"]
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                      // A grid view with 3 items per row
+                                      crossAxisCount: 4,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
                           icon: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
                             decoration: BoxDecoration(
