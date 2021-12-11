@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:magician_app/provider/data_manager.dart';
 import 'package:magician_app/utils/cards_icons.dart';
+import 'package:magician_app/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 import 'package:vector_math/vector_math_64.dart' as vector;
@@ -374,6 +375,12 @@ class _GhostStickerState extends State<GhostSticker> {
   Offset _offset = Offset.zero;
 
   @override
+  void initState() {
+    _offset = Offset(widget.viewport!.width / 3, widget.viewport!.height / 3);
+    super.initState();
+  }
+
+  @override
   void dispose() {
     super.dispose();
     _offset = Offset.zero;
@@ -382,7 +389,6 @@ class _GhostStickerState extends State<GhostSticker> {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      // rect: Rect.fromPoints(Offset(_offset.dx, _offset.dy), Offset(_offset.dx + widget.width!, _offset.dy + widget.height!)),
       left: _offset.dx,
       top: _offset.dy,
       width: widget.width,

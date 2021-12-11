@@ -107,8 +107,7 @@ class _CameraScreenState extends State<CameraScreen> {
                       Align(
                         alignment: Alignment.bottomCenter,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          margin: const EdgeInsets.symmetric(vertical: 5),
+                          margin: const EdgeInsets.only(bottom: 10),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
