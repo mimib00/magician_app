@@ -177,8 +177,10 @@ class _CameraScreenState extends State<CameraScreen> {
                               color: const Color(0xff181B30).withOpacity(.5),
                               borderRadius: BorderRadius.circular(5),
                             ),
-                            child: const Icon(
-                              Icons.select_all_rounded,
+                            child: SvgPicture.asset(
+                              'assets/images/CardSelector.svg',
+                              width: kWidth(context) * .06,
+                              height: kHeight(context) * .04,
                               color: Colors.white,
                             ),
                           ),

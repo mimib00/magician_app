@@ -7,6 +7,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:magician_app/provider/data_manager.dart';
+import 'package:magician_app/utils/cards_icons.dart';
 
 import 'package:magician_app/utils/constants.dart';
 import 'package:magician_app/utils/magician_icons_icons.dart';
@@ -15,6 +17,7 @@ import 'package:magician_app/widgets/custom_button.dart';
 import 'package:magician_app/widgets/playing_card.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 
 import 'package:share_plus/share_plus.dart';
@@ -85,6 +88,7 @@ class _PhotoEditorState extends State<PhotoEditor> {
     setState(() {
       cards.removeWhere((element) => element == name);
     });
+    if (cards.isEmpty) getRandomCards();
   }
 
   getRandomCards() {
@@ -95,6 +99,50 @@ class _PhotoEditorState extends State<PhotoEditor> {
         cardsList[cardnumber],
       );
     }
+  }
+
+  Map<String, dynamic> cardMaker(String cardName) {
+    final type = cardName.split('-');
+    final name = type[1];
+    Icon? _cardTypeIcon;
+    Color? cardColor;
+
+    switch (type[0]) {
+      case "D":
+        _cardTypeIcon = Icon(
+          CardsIcons.carreau,
+          color: context.watch<DataManager>().coeurCarreau,
+        );
+        cardColor = context.watch<DataManager>().coeurCarreau;
+        break;
+      case "H":
+        _cardTypeIcon = Icon(
+          CardsIcons.coeur,
+          color: context.watch<DataManager>().coeurCarreau,
+        );
+        cardColor = context.watch<DataManager>().coeurCarreau;
+        break;
+      case "C":
+        _cardTypeIcon = Icon(
+          CardsIcons.trefle,
+          color: context.watch<DataManager>().treflePique,
+        );
+        cardColor = context.watch<DataManager>().treflePique;
+        break;
+      case "S":
+        _cardTypeIcon = Icon(
+          CardsIcons.pique,
+          color: context.watch<DataManager>().treflePique,
+        );
+        cardColor = context.watch<DataManager>().treflePique;
+        break;
+      default:
+    }
+    return {
+      "name": name,
+      "icon": _cardTypeIcon,
+      "color": cardColor,
+    };
   }
 
   /// Fetches the Temporary Directory of the phone.
@@ -124,6 +172,20 @@ class _PhotoEditorState extends State<PhotoEditor> {
 
   @override
   Widget build(BuildContext context) {
+    ghostImage = GhostSticker(
+      Stack(
+        children: [
+          SvgPicture.asset("assets/images/Ghost.svg"),
+          Positioned(
+            child: HandCard(
+              selectedCard,
+            ),
+          ),
+        ],
+      ),
+      key: Key("sticker_$selectedCard"),
+      viewport: Size(kWidth(context), kHeight(context)),
+    );
     Widget child;
     if (widget.source.runtimeType == AssetEntity) {
       child = FutureBuilder<File?>(
@@ -243,95 +305,49 @@ class _PhotoEditorState extends State<PhotoEditor> {
                 left: 15,
                 child: GestureDetector(
                   onTap: () {
-                    showModalBottomSheet(
+                    showDialog(
                       context: context,
-                      backgroundColor: Colors.transparent,
-                      isDismissible: true,
-                      builder: (context) => Container(
-                        padding: const EdgeInsets.all(5),
-                        height: kHeight(context) * .25,
-                        decoration: const BoxDecoration(
-                          color: backgroundColor,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20),
-                          ),
+                      builder: (_) => AlertDialog(
+                        backgroundColor: backgroundColor,
+                        titleTextStyle: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              "Select Items",
-                              style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
-                            ),
-                            const Spacer(),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Column(
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          getRandomCards();
-                                        });
-
-                                        Navigator.pop(context);
-                                      },
-                                      child: SvgPicture.asset(
-                                        'assets/images/CardSelector.svg',
-                                        width: kWidth(context) * .15,
-                                        height: kHeight(context) * .1,
-                                        color: Colors.white,
+                        title: const Text("Select a card"),
+                        content: SizedBox(
+                          height: kHeight(context) * .7,
+                          width: kWidth(context),
+                          child: GridView.builder(
+                            itemCount: cardsList.length,
+                            itemBuilder: (_, index) {
+                              final data = cardMaker(cardsList[index]);
+                              return GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    selectedCard = cardsList[index];
+                                  });
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.all(5),
+                                  color: Colors.white,
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        data['name'],
+                                        style: TextStyle(fontSize: 20, color: data['color'], fontWeight: FontWeight.bold),
                                       ),
-                                    ),
-                                    const SizedBox(height: 5),
-                                    const Text(
-                                      "Get Random Cards",
-                                      style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
-                                    )
-                                  ],
+                                      data["icon"]
+                                    ],
+                                  ),
                                 ),
-                                Column(
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          ghostImage = GhostSticker(
-                                            Stack(
-                                              children: [
-                                                SvgPicture.asset("assets/images/Ghost.svg"),
-                                                Positioned(
-                                                  child: HandCard(
-                                                    selectedCard,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            key: Key("sticker_$selectedCard"),
-                                            width: widget.stickerWidth,
-                                            height: widget.stickerHeight,
-                                            viewport: viewport,
-                                          );
-                                        });
-                                      },
-                                      child: SvgPicture.asset(
-                                        'assets/images/Ghost.svg',
-                                        width: kWidth(context) * .15,
-                                        height: kHeight(context) * .1,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5),
-                                    const Text(
-                                      "Ghost",
-                                      style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
-                                    )
-                                  ],
-                                ),
-                              ],
+                              );
+                            },
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              // A grid view with 3 items per row
+                              crossAxisCount: 4,
                             ),
-                            const Spacer(),
-                          ],
+                          ),
                         ),
                       ),
                     );
@@ -470,95 +486,49 @@ class _PhotoEditorState extends State<PhotoEditor> {
             left: 15,
             child: GestureDetector(
               onTap: () {
-                showModalBottomSheet(
+                showDialog(
                   context: context,
-                  backgroundColor: Colors.transparent,
-                  isDismissible: true,
-                  builder: (context) => Container(
-                    padding: const EdgeInsets.all(5),
-                    height: kHeight(context) * .25,
-                    decoration: const BoxDecoration(
-                      color: backgroundColor,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
-                      ),
+                  builder: (_) => AlertDialog(
+                    backgroundColor: backgroundColor,
+                    titleTextStyle: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "Select Items",
-                          style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
-                        ),
-                        const Spacer(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Column(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      getRandomCards();
-                                    });
-
-                                    Navigator.pop(context);
-                                  },
-                                  child: SvgPicture.asset(
-                                    'assets/images/CardSelector.svg',
-                                    width: kWidth(context) * .15,
-                                    height: kHeight(context) * .1,
-                                    color: Colors.white,
+                    title: const Text("Select a card"),
+                    content: SizedBox(
+                      height: kHeight(context) * .7,
+                      width: kWidth(context),
+                      child: GridView.builder(
+                        itemCount: cardsList.length,
+                        itemBuilder: (_, index) {
+                          final data = cardMaker(cardsList[index]);
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedCard = cardsList[index];
+                              });
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.all(5),
+                              color: Colors.white,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    data['name'],
+                                    style: TextStyle(fontSize: 20, color: data['color'], fontWeight: FontWeight.bold),
                                   ),
-                                ),
-                                const SizedBox(height: 5),
-                                const Text(
-                                  "Get Random Cards",
-                                  style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
-                                )
-                              ],
+                                  data["icon"]
+                                ],
+                              ),
                             ),
-                            Column(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      ghostImage = GhostSticker(
-                                        Stack(
-                                          children: [
-                                            SvgPicture.asset("assets/images/Ghost.svg"),
-                                            Positioned(
-                                              child: HandCard(
-                                                selectedCard,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        key: Key("sticker_$selectedCard"),
-                                        width: widget.stickerWidth,
-                                        height: widget.stickerHeight,
-                                        viewport: viewport,
-                                      );
-                                    });
-                                  },
-                                  child: SvgPicture.asset(
-                                    'assets/images/Ghost.svg',
-                                    width: kWidth(context) * .15,
-                                    height: kHeight(context) * .1,
-                                  ),
-                                ),
-                                const SizedBox(height: 5),
-                                const Text(
-                                  "Ghost",
-                                  style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
-                                )
-                              ],
-                            ),
-                          ],
+                          );
+                        },
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          // A grid view with 3 items per row
+                          crossAxisCount: 4,
                         ),
-                        const Spacer(),
-                      ],
+                      ),
                     ),
                   ),
                 );
@@ -593,51 +563,4 @@ class _PhotoEditorState extends State<PhotoEditor> {
       ),
     );
   }
-
-  // void onTapRemoveCard(Widget card) {
-  //   setState(() {
-  //     ghostImage.removeWhere((s) => s.key == card.key);
-  //   });
-  // }
 }
-
-/*Column(
-      children: [
-        Expanded(
-          child: RepaintBoundary(
-            key: key,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) {
-                    viewport = viewport ?? Size(constraints.maxWidth, constraints.maxHeight);
-                    return Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Screenshot(
-                        controller: _screenshotController,
-                        child: widget.source,
-                      ),
-                    );
-                  },
-                ),
-                Stack(children: ghostImage, fit: StackFit.expand),
-              ],
-            ),
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: widget.cards
-              .map(
-                (e) => GestureDetector(
-                  onTap: () {
-                    attachSticker(e);
-                  },
-                  child: StaticPlayingCard(e),
-                ),
-              )
-              .toList(),
-        ),
-      ],
-    );*/

@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:magician_app/provider/data_manager.dart';
 import 'package:magician_app/root.dart';
 import 'package:magician_app/utils/constants.dart';
@@ -25,6 +26,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     context.read<DataManager>().setAvailableCameras(cameras);
     context.read<DataManager>().getCardProps();
+
+    /// Makes the app portrait mode only
+    SystemChrome.setPreferredOrientations(const [
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
     return MaterialApp(
       title: 'Magician Demo',
       builder: (context, child) {

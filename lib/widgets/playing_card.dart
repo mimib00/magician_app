@@ -5,7 +5,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:magician_app/provider/data_manager.dart';
 import 'package:magician_app/utils/cards_icons.dart';
-import 'package:magician_app/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 import 'package:vector_math/vector_math_64.dart' as vector;

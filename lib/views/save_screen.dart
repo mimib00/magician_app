@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:add_to_gallery/add_to_gallery.dart';
 import 'package:flutter/material.dart';
+import 'package:magician_app/root.dart';
 import 'package:magician_app/utils/constants.dart';
 import 'package:magician_app/utils/magician_icons_icons.dart';
 import 'package:magician_app/widgets/custom_button.dart';
@@ -49,6 +50,7 @@ class _SaveScreenState extends State<SaveScreen> {
     setState(() {
       isLoading = false;
     });
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const RootPage()));
   }
 
   @override
