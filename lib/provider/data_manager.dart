@@ -47,7 +47,7 @@ class DataManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  initializeCamera(int cameraIndex, context) async {
+  initializeCamera(int cameraIndex) async {
     _controller = CameraController(
       // Get a specific camera from the list of available cameras.
       _cameras[cameraIndex],
@@ -57,28 +57,10 @@ class DataManager extends ChangeNotifier {
 
     // Next, initialize the controller. This returns a Future.
     await _controller.initialize();
-    setScale(context);
     notifyListeners();
   }
 
   disposeController() => _controller.dispose();
-
-  /// in the args list you must pass [context , _controller]
-  setScale(context) {
-    var camera = _controller.value;
-
-    // fetch screen size
-    final size = MediaQuery.of(context).size;
-
-    // calculate scale depending on screen and camera ratios
-    // this is actually size.aspectRatio / (1 / camera.aspectRatio)
-    // because camera preview size is received as landscape
-    // but we're calculating for portrait orientation
-    _scale = size.aspectRatio * camera.aspectRatio;
-
-    // to prevent scaling down, invert the value
-    if (_scale < 1) _scale = 1 / _scale;
-  }
 
   setAvailableCameras(List<CameraDescription> cameras) => _cameras = cameras;
 

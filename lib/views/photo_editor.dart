@@ -54,7 +54,7 @@ class PhotoEditor extends StatefulWidget {
 
 class _PhotoEditorState extends State<PhotoEditor> {
   final ScreenshotController _screenshotController = ScreenshotController();
-  Size? viewport;
+  Size viewport = Size.zero;
   Random random = Random();
 
   String selectedCard = 'H-A';
@@ -64,7 +64,6 @@ class _PhotoEditorState extends State<PhotoEditor> {
   Widget ghostImage = Container();
 
   final GlobalKey key = GlobalKey();
-  final GlobalKey<ScaffoldState> scaffoldState = GlobalKey<ScaffoldState>();
 
   bool isLoading = false;
 
@@ -152,7 +151,7 @@ class _PhotoEditorState extends State<PhotoEditor> {
                             children: [
                               LayoutBuilder(
                                 builder: (BuildContext context, BoxConstraints constraints) {
-                                  viewport = viewport ?? Size(constraints.maxWidth, constraints.maxHeight);
+                                  viewport = Size(constraints.maxWidth, constraints.maxHeight);
 
                                   ghostImage = GhostSticker(
                                     Stack(
@@ -377,7 +376,7 @@ class _PhotoEditorState extends State<PhotoEditor> {
                       children: [
                         LayoutBuilder(
                           builder: (BuildContext context, BoxConstraints constraints) {
-                            viewport = viewport ?? Size(constraints.maxWidth, constraints.maxHeight);
+                            viewport = Size(constraints.maxWidth, constraints.maxHeight);
 
                             ghostImage = GhostSticker(
                               Stack(
@@ -590,7 +589,6 @@ class _PhotoEditorState extends State<PhotoEditor> {
     }
     return SafeArea(
       child: Scaffold(
-        key: scaffoldState,
         body: child,
       ),
     );

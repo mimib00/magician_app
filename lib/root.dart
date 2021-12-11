@@ -27,38 +27,40 @@ class _RootPageState extends State<RootPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: selectedScreen != 1
-          ? AppBar(
-              title: Text(
-                titles[selectedScreen],
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
-              ),
-              elevation: 0,
-              backgroundColor: backgroundColor,
-            )
-          : null,
-      body: screens[selectedScreen],
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: (index) {
-          setState(() {
-            selectedScreen = index;
-          });
-        },
-        currentIndex: selectedScreen,
-        type: BottomNavigationBarType.fixed,
-        iconSize: 30,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        elevation: 0,
-        backgroundColor: backgroundColor,
-        selectedItemColor: primaryColor,
-        unselectedItemColor: Colors.white,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(MagicianIcons.gallery), label: ''),
-          BottomNavigationBarItem(icon: Icon(MagicianIcons.home), label: ''),
-          BottomNavigationBarItem(icon: Icon(MagicianIcons.settings), label: ''),
-        ],
+    return SafeArea(
+      child: Scaffold(
+        appBar: selectedScreen != 1
+            ? AppBar(
+                title: Text(
+                  titles[selectedScreen],
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+                ),
+                elevation: 0,
+                backgroundColor: backgroundColor,
+              )
+            : null,
+        body: screens[selectedScreen],
+        bottomNavigationBar: BottomNavigationBar(
+          onTap: (index) {
+            setState(() {
+              selectedScreen = index;
+            });
+          },
+          currentIndex: selectedScreen,
+          type: BottomNavigationBarType.fixed,
+          iconSize: 30,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          elevation: 0,
+          backgroundColor: backgroundColor,
+          selectedItemColor: primaryColor,
+          unselectedItemColor: Colors.white,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(MagicianIcons.gallery), label: ''),
+            BottomNavigationBarItem(icon: Icon(MagicianIcons.home), label: ''),
+            BottomNavigationBarItem(icon: Icon(MagicianIcons.settings), label: ''),
+          ],
+        ),
       ),
     );
   }
