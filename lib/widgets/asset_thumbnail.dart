@@ -2,11 +2,9 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:magician_app/provider/data_manager.dart';
 import 'package:magician_app/utils/constants.dart';
 import 'package:magician_app/views/photo_editor.dart';
 import 'package:photo_manager/photo_manager.dart';
-import 'package:provider/provider.dart';
 
 class AssetThumbnail extends StatelessWidget {
   const AssetThumbnail({
@@ -28,7 +26,6 @@ class AssetThumbnail extends StatelessWidget {
 
         return GestureDetector(
           onTap: () {
-            context.read<DataManager>().setWorkingImage(asset);
             Navigator.of(context).push(MaterialPageRoute(builder: (_) => PhotoEditor(source: asset)));
           },
           child: Container(
