@@ -1,12 +1,12 @@
 // ignore_for_file: prefer_final_fields
 
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:magician_app/models/working_modes.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,12 +19,14 @@ class DataManager extends ChangeNotifier {
 
   bool hasPermission = false;
 
-  WorkingMode workingMode = WorkingMode.none;
-
-  List<Widget> _items = [];
-
   List<CameraDescription> _cameras = []; // store the available cameras for later use
   late CameraController _controller;
+
+  Offset _offset = Offset.zero;
+  Offset _previousOffset = Offset.zero;
+  Offset _startingFocalPoint = Offset.zero;
+
+  String _selectedCard = 'H-A';
 
   AssetEntity? image;
 
@@ -32,20 +34,10 @@ class DataManager extends ChangeNotifier {
   List<Uint8List?> thumbs = [];
   List<File?> files = [];
 
-  AssetEntity? workingImage;
-
-  double _scale = 0;
-
-  List<Widget> get items => _items;
   List<CameraDescription> get cameras => _cameras;
   CameraController get controller => _controller;
-
-  double get scale => _scale;
-
-  setWorkingImage(AssetEntity image) {
-    workingImage = image;
-    notifyListeners();
-  }
+  Offset get offset => _offset;
+  String get selectedCard => _selectedCard;
 
   initializeCamera(int cameraIndex) async {
     _controller = CameraController(
@@ -130,5 +122,39 @@ class DataManager extends ChangeNotifier {
         default:
       }
     }
+  }
+
+  selectCard(String name) {
+    _selectedCard = name;
+    notifyListeners();
+  }
+
+  void onInitOffset(Size viewport) {
+    if (_offset == Offset.zero) {
+      _offset = Offset(viewport.width / 3, viewport.height / 3);
+    } else {
+      return;
+    }
+  }
+
+  void onScaleStart(ScaleStartDetails details) {
+    _startingFocalPoint = details.focalPoint;
+    _previousOffset = _offset;
+
+    // print("begin - focal : ${details.focalPoint}, local : ${details.localFocalPoint}");
+  }
+
+  void onScaleUpdate(ScaleUpdateDetails details, double width, double height, Size viewport) {
+    final Offset normalizedOffset = (_startingFocalPoint - _previousOffset);
+
+    Offset __offset = details.focalPoint - normalizedOffset;
+
+    __offset = Offset(max(__offset.dx, -width), max(__offset.dy, -height));
+
+    __offset = Offset(min(__offset.dx, viewport.width), min(__offset.dy, viewport.height));
+
+    _offset = __offset;
+    // print("move - $_offset, scale : $_scale");
+    notifyListeners();
   }
 }

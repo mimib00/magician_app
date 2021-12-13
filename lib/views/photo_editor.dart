@@ -60,11 +60,9 @@ class _PhotoEditorState extends State<PhotoEditor> {
   Size viewport = Size.zero;
   Random random = Random();
 
-  String selectedCard = 'H-A';
-
   List<String> cards = [];
 
-  Widget ghostImage = Container();
+  // Widget ghostImage = Container();
 
   final GlobalKey key = GlobalKey();
 
@@ -75,13 +73,6 @@ class _PhotoEditorState extends State<PhotoEditor> {
     getRandomCards();
 
     super.initState();
-  }
-
-  void addGhost(String name) {
-    setState(() {
-      selectedCard = name;
-      removeCrads(name);
-    });
   }
 
   removeCrads(String name) {
@@ -172,18 +163,18 @@ class _PhotoEditorState extends State<PhotoEditor> {
 
   @override
   Widget build(BuildContext context) {
-    ghostImage = GhostSticker(
+    Widget ghostImage = GhostSticker(
       Stack(
         children: [
           SvgPicture.asset("assets/images/Ghost.svg"),
           Positioned(
             child: HandCard(
-              selectedCard,
+              context.watch<DataManager>().selectedCard,
             ),
           ),
         ],
       ),
-      key: Key("sticker_$selectedCard"),
+      key: Key("sticker_${context.watch<DataManager>().selectedCard}"),
       viewport: Size(kWidth(context), kHeight(context)),
     );
     Widget child;
@@ -215,23 +206,6 @@ class _PhotoEditorState extends State<PhotoEditor> {
                                 builder: (BuildContext context, BoxConstraints constraints) {
                                   viewport = Size(constraints.maxWidth, constraints.maxHeight);
 
-                                  ghostImage = GhostSticker(
-                                    Stack(
-                                      children: [
-                                        SvgPicture.asset("assets/images/Ghost.svg"),
-                                        Positioned(
-                                          child: HandCard(
-                                            selectedCard,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    key: Key("sticker_$selectedCard"),
-                                    width: widget.stickerWidth,
-                                    height: widget.stickerHeight,
-                                    viewport: viewport,
-                                  );
-
                                   return Image.file(
                                     file,
                                     fit: BoxFit.fitWidth,
@@ -251,7 +225,7 @@ class _PhotoEditorState extends State<PhotoEditor> {
                         .map(
                           (e) => GestureDetector(
                             onTap: () {
-                              addGhost(e);
+                              context.read<DataManager>().selectCard(e);
                             },
                             child: StaticPlayingCard(e),
                           ),
@@ -323,9 +297,7 @@ class _PhotoEditorState extends State<PhotoEditor> {
                               final data = cardMaker(cardsList[index]);
                               return GestureDetector(
                                 onTap: () {
-                                  setState(() {
-                                    selectedCard = cardsList[index];
-                                  });
+                                  context.read<DataManager>().selectCard(cardsList[index]);
                                   Navigator.pop(context);
                                 },
                                 child: Container(
@@ -394,23 +366,6 @@ class _PhotoEditorState extends State<PhotoEditor> {
                           builder: (BuildContext context, BoxConstraints constraints) {
                             viewport = Size(constraints.maxWidth, constraints.maxHeight);
 
-                            ghostImage = GhostSticker(
-                              Stack(
-                                children: [
-                                  SvgPicture.asset("assets/images/Ghost.svg"),
-                                  Positioned(
-                                    child: HandCard(
-                                      selectedCard,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              key: Key("sticker_$selectedCard"),
-                              width: widget.stickerWidth,
-                              height: widget.stickerHeight,
-                              viewport: viewport,
-                            );
-
                             return Padding(
                               padding: const EdgeInsets.all(10),
                               child: Image.file(
@@ -432,7 +387,7 @@ class _PhotoEditorState extends State<PhotoEditor> {
                     .map(
                       (e) => GestureDetector(
                         onTap: () {
-                          addGhost(e);
+                          context.read<DataManager>().selectCard(e);
                         },
                         child: StaticPlayingCard(e),
                       ),
@@ -504,9 +459,7 @@ class _PhotoEditorState extends State<PhotoEditor> {
                           final data = cardMaker(cardsList[index]);
                           return GestureDetector(
                             onTap: () {
-                              setState(() {
-                                selectedCard = cardsList[index];
-                              });
+                              context.read<DataManager>().selectCard(cardsList[index]);
                               Navigator.pop(context);
                             },
                             child: Container(
