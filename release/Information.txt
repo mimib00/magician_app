@@ -1,0 +1,6 @@
+App signing password = MagicApp
+alias = admin
+file name = upload-keystore.jks
+
+in the build folder you will find an apk(.apk) and appbundle(.aab), the apk is for when you want to manually install it on your phone,
+and appbundle is for google paly store it's recomanded by google to use appbundle when you want to publish to play store. 
